@@ -289,8 +289,16 @@ classdef Qsynth < handle
                 Q_sim_cp_tt = obj.tt_syn;
                 while 1
                     peak = find(Q_sim_cp_tt.Q_sim_re>Q_max,1);
-                    temp = Q_sim_cp_tt(peak-tau:end,:);
-                    Q_sim_cp_tt.Q_sim_re(peak-tau:end) = obj.regeneraterunoff(EstMdl, temp);
+                    if (peak>tau)
+                        temp = Q_sim_cp_tt(peak-tau:end,:);
+                        Q_sim_cp_tt.Q_sim_re(peak-tau:end) = obj.regeneraterunoff(EstMdl, temp);
+                    elseif (peak<=tau && peak>1)
+                        temp = Q_sim_cp_tt(peak-(peak-1):end,:);
+                        Q_sim_cp_tt.Q_sim_re(peak-(peak-1):end) = obj.regeneraterunoff(EstMdl, temp);
+                    elseif (peak==1)
+                        temp = Q_sim_cp_tt(peak:end,:);
+                        Q_sim_cp_tt.Q_sim_re(peak:end) = obj.regeneraterunoff(EstMdl, temp);
+                    end
                     if (Q_sim_cp_tt.Q_sim_re<Q_max)
                         obj.tt_syn.Q_sim_re = Q_sim_cp_tt.Q_sim_re;
                         obj.tt_syn.Q_sim = Q_sim_cp_tt.Q_sim;
@@ -298,7 +306,7 @@ classdef Qsynth < handle
                         break
                     end
                 end
-            elseif any(obj.tt_syn.Q_sim_re<=Q_max)
+            else
                 disp('No occurence of unrealistic high peaks!')
                 Q_sim = obj.tt_syn.Q_sim_re;
             end
