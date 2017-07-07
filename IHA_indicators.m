@@ -159,13 +159,19 @@ else
     IHA_ind(30,i) = IHA_ind(30,i)/IHA_ind(28,i);
 end
     
-if (tab_low(1,i)~=0) && (tab_low(4,i)==1) && (tab_low(2,i+1)==1)    
+if (IHA_ind(29,i)==0 || IHA_ind(27,i)==0)
+    IHA_ind(29,i) = 0;
+elseif (tab_low(1,i)~=0) && (tab_low(4,i)==1) && (tab_low(2,i+1)==1)    
     IHA_ind(29,i) = (IHA_ind(29,i) +  tab_low(3,i+1))/IHA_ind(27,i);
 else
     IHA_ind(29,i) = IHA_ind(29,i)/IHA_ind(27,i);
 end    
 end
 IHA_ind(30,end) = IHA_ind(30,end)/IHA_ind(28,end);
-IHA_ind(29,end) = IHA_ind(29,end)/IHA_ind(27,end);
+if (IHA_ind(29,i)==0 || IHA_ind(27,i)==0)
+    IHA_ind(29,end) = 0;
+else
+    IHA_ind(29,i) = IHA_ind(29,i)/IHA_ind(27,i);
+end
 
 end
