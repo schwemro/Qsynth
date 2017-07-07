@@ -1,7 +1,11 @@
 # which files to ignore
-*~
+*.m~
+*.asv
+*.log
 *.zip
 *.gz
+*.pdf
+*.fig
 .DS_Store
 # which folders to ignore
 /Tisean_3.0.1/
