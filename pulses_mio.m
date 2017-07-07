@@ -82,13 +82,13 @@ IHA_g4.sum_durat_low_p = sum(durat_low_events);%sum al posto di mean
 if IHA_g4.n_high_p == 0; IHA_g4.sum_durat_high_p = 0; end;%sum al posto di mean
 if IHA_g4.n_low_p == 0; IHA_g4.sum_durat_low_p = 0; end;%sum al posto di mean
 
-mem.low=NaN(5,1);
+mem.low=NaN(4,1);
 mem.low(1,1)=IHA_g4.n_low_p;
 mem.low(2,1)=bool_low_p(1,1);
 mem.low(3,1)=durat_low_events(1,1);
 mem.low(4,1)=bool_low_p(end,1);
 
-mem.high=NaN(5,1);
+mem.high=NaN(4,1);
 mem.high(1,1)=IHA_g4.n_high_p;
 mem.high(2,1)=bool_high_p(1,1);
 mem.high(3,1)=durat_high_events(1,1);
