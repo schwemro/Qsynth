@@ -1,0 +1,9 @@
+# which files to ignore
+*.m~
+*.zip
+*.gz
+.DS_Store
+# which folders to ignore
+/Tisean_3.0.1/
+/results/
+/input/
