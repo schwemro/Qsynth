@@ -152,7 +152,7 @@ classdef Qsynth < handle
 %             saveas(f2,[obj.dir_results '/Runoff_Regime_monthly.pdf']);
             saveas(f2,[obj.dir_results '/Runoff_Regime_monthly.fig']);
 
-            f3 = figure('Name','Pard� Coefficient','NumberTitle','off');
+            f3 = figure('Name','Parde Coefficient','NumberTitle','off');
             plot(Q_regime_monthly.MM, Q_regime_monthly.parde, '-bo');
             grid;
             xlim([1 12]);
@@ -213,7 +213,7 @@ classdef Qsynth < handle
                 obj.q = l(1) - 1;
             end
 
-            [pacf,lags_pacf,bounds_pacf] = parcorr(obj.tt_obs.Q_trans_stand_d, 50);
+            [pacf,lags_pacf,bounds_pacf] = parcorr(obj.tt_obs.Q_trans_stand_d, 20);
             k = find(pacf<bounds_pacf(1)&pacf>bounds_pacf(2));
             obj.p = k(1) - 1;
 
@@ -228,8 +228,8 @@ classdef Qsynth < handle
             xlabel('Lag [Days]');
             ylabel('ACF');
             subplot(2,1,2);
-            parcorr(obj.tt_obs.Q_trans_stand_d, 50);
-            xlim([0 50]);
+            parcorr(obj.tt_obs.Q_trans_stand_d, 20);
+            xlim([0 20]);
             text(obj.p-.5,bounds_pacf(1)+.15, ['\bf p=' int2str(obj.p)], 'FontSize', 13);
             title('');
             xlabel('Lag [Days]');
@@ -332,7 +332,7 @@ classdef Qsynth < handle
             IHA_ind_obs_mean=mean(IHA_ind_obs,2);
             IHA_ind_obs_mean_1 = [IHA_ind_obs_mean(1:22); IHA_ind_obs_mean(27:34)];
 
-            acf_obs = autocorr(Q_obs, 365);
+            acf_obs = autocorr(Q_obs, 100);
 
             ws = 3:2:9;
             x2 = 10:10:60;
@@ -350,7 +350,7 @@ classdef Qsynth < handle
                     IHA_diff = abs(IHA_ind_obs_mean_1-IHA_ind_syn_mws_mean_1);
                     mean_IHA_diff = mean(IHA_diff);
 
-                    acf_syn_mws = autocorr(Q_syn_mws, 365);
+                    acf_syn_mws = autocorr(Q_syn_mws, 100);
                     acf_diff = abs(acf_obs-acf_syn_mws);
                     mean_acf_diff = mean(acf_diff);
 
@@ -583,7 +583,7 @@ classdef Qsynth < handle
 %             saveas(f1,[obj.dir_results '/ACF_of_Residuals.pdf']);
             saveas(f1,[obj.dir_results '/ACF_of_Residuals.fig']);
 
-            f2 = figure('Name','Histogram of Residuals','NumberTitle');
+            f2 = figure('Name','Histogram of Residuals','NumberTitle', 'off');
             histogram(obj.tt_syn.E);
             grid; title('Distribution of \epsilon');
 %             saveas(f2,[obj.dir_results '/Histogram_of_Residuals.pdf']);
@@ -607,14 +607,14 @@ classdef Qsynth < handle
 
             f4 = figure('Name','PACF of Obs & Syn','NumberTitle','off');
             subplot(2,1,1);
-            parcorr(Q_obs, 50);
-            xlim([0 50]);
+            parcorr(Q_obs, 20);
+            xlim([0 20]);
             title('Observed');
             xlabel('Lag [Days]');
             ylabel('PACF');
             subplot(2,1,2);
-            parcorr(Q_syn, 50);
-            xlim([0 50]);
+            parcorr(Q_syn, 20);
+            xlim([0 20]);
             title(obj.approach_str{obj.approach});
             xlabel('Lag [Days]');
             ylabel('PACF');
@@ -760,7 +760,7 @@ classdef Qsynth < handle
            xlabel('Date');
            ylabel('Volume [km^3]');
            xtickformat('MMM-yyyy');
-           legend({'Q_{obs}','Q_{syn}'},'Box','off');
+           legend({'Q_{obs}','Q_{syn}'},'Box','off','Location','northwest');
            saveas(f1,[obj.dir_results '/cum_volume_mm.fig']);
 
            f2 = figure('Name','Cumulated Volume (yearly)','NumberTitle','off');
@@ -772,7 +772,7 @@ classdef Qsynth < handle
            xlabel('Date');
            ylabel('Volume [km^3]');
            xtickformat('yyyy');
-           legend({'Q_{obs}','Q_{syn}'},'Box','off');
+           legend({'Q_{obs}','Q_{syn}'},'Box','off','Location','northwest');
            saveas(f2,[obj.dir_results '/cum_volume_yy.fig']);
 
            f3 = figure('Name','Total Volume (monthly)','NumberTitle','off');
