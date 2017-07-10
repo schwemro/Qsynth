@@ -23,33 +23,43 @@ Qsyn.testseas();
 Qsyn.rmseas(Qsyn.Q_regime_daily, Qsyn.Q_std_daily);
 Qsyn.determineorder();
 Qsyn.selectmodel();
+clusters = {};
+close all;
 for i = 1:l
-    prog = (i/l)*100;
-    disp([num2str(prog) '%'])
-    Qsyn.folderres(num2str(i));
-    Q_sim1 = Qsyn.generaterunoff(Qsyn.EstMdl,Qsyn.Q_regime_daily, Qsyn.Q_std_daily);
-    Qsyn.tt_syn.Q_sim_re = Q_sim1;
-    Q_max = max(Qsyn.tt_obs.Q)*1.1;
-    Q_cp = Qsyn.cutpeaksrgm(Q_max,Qsyn.EstMdl);
-    Qsyn.tt_syn.Q_sim_re = Q_cp;
-    Qsyn.optMAwMWS();
-    Q_ma = Qsyn.MAwMWS(Q_cp,Qsyn.w,Qsyn.Qx,'lin');
-    Qsyn.tt_syn.Q_sim_re = Q_ma;
-    Qsyn.teststats();
-    test_stats_mc(i,:) = Qsyn.test_stats(:,2);
-    Q_syn_mc(:,i) = Qsyn.tt_syn.Q_sim_re;
-    acf_mc(:,i) = autocorr(Qsyn.tt_syn.Q_sim_re, 100);
-    yy = Qsyn.tt_syn.YYYY(1);
-    mm = Qsyn.tt_syn.MM(1);
-    dd = Qsyn.tt_syn.dd(1);
+   clusters{1,i} = Qsyn;
+end
+clusters_perc = {};
+for i = 1:l
+   clusters_perc{1,i};
+end
+parpool('local');
+ppm = ParforProgMon('Progress', l);
+parfor i = 1:numel(clusters)
+    clusters{1,i}.folderres(num2str(i));
+    Q_sim1 = clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
+    clusters{1,i}.tt_syn.Q_sim_re = Q_sim1;
+    Q_max = max(clusters{1,i}.tt_obs.Q)*1.1;
+    Q_cp = clusters{1,i}.cutpeaksrgm(Q_max,clusters{1,i}.EstMdl);
+    clusters{1,i}.tt_syn.Q_sim_re = Q_cp;
+    clusters{1,i}.optMAwMWS();
+    Q_ma = clusters{1,i}.MAwMWS(Q_cp,clusters{1,i}.w,clusters{1,i}.Qx,'lin');
+    clusters{1,i}.tt_syn.Q_sim_re = Q_ma;
+    clusters{1,i}.teststats();
+    test_stats_mc(i,:) = clusters{1,i}.test_stats(:,2);
+    Q_syn_mc(:,i) = clusters{1,i}.tt_syn.Q_sim_re;
+    acf_mc(:,i) = autocorr(clusters{1,i}.tt_syn.Q_sim_re, 100);
+    yy = clusters{1,i}.tt_syn.YYYY(1);
+    mm = clusters{1,i}.tt_syn.MM(1);
+    dd = clusters{1,i}.tt_syn.dd(1);
     date = [ dd mm yy ];
-    perc.q25th = prctile(Qsyn.tt_syn.Q_sim_re,25);
-    perc.q75th = prctile(Qsyn.tt_syn.Q_sim_re,75);
+    perc.q25th = prctile(clusters{1,i}.tt_syn.Q_sim_re,25);
+    perc.q75th = prctile(clusters{1,i}.tt_syn.Q_sim_re,75);
     init_date = date;
     init_year = yy;
-    [IHA_ind_syn] = IHA_indicators( Qsyn.tt_syn.Q_sim_re, perc, init_date, init_year );
+    [IHA_ind_syn] = IHA_indicators( clusters{1,i}.tt_syn.Q_sim_re, perc, init_date, init_year );
     IHA_mc(i,:) = mean(IHA_ind_syn,2);
     rmdir(num2str(i));
+    ppm.increment();
 end
 
 acf_lq = prctile(acf_mc,2.5,2);
@@ -66,8 +76,8 @@ mkdir('MC');
 
 f1 = figure('Name','Confidence interval ACF','NumberTitle','off');
 x = [0:100]';
-xx = [x;flipud(x)];      
-yy = [acf_lq;flipud(acf_uq)]; 
+xx = [x;flipud(x)];
+yy = [acf_lq;flipud(acf_uq)];
 fill(xx,yy,[0.7 0.7 0.7],'EdgeColor','None')
 hold on
 plot(x,acf_med,'k','LineWidth',1.5);
@@ -80,8 +90,8 @@ legend({'Confidence interval 95%','Median','Q_{obs}'},'Box','off','Location','no
 saveas(f1, 'MC/confidence_interval_ACF.fig');
 
 f2 = figure('Name','Confidence interval Q_syn','NumberTitle','off');
-xx = [Date;flipud(Date)];      
-yy = [Q_syn_lq;flipud(Q_syn_uq)]; 
+xx = [Date;flipud(Date)];
+yy = [Q_syn_lq;flipud(Q_syn_uq)];
 fill(xx,yy,[0.7 0.7 0.7],'EdgeColor','None')
 hold on
 plot(Date,Q_syn_med,'k','LineWidth',1.5);
