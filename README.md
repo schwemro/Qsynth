@@ -28,4 +28,4 @@ An example file how to use the generator is provided:
 > dd-mm-YYYY       | x3
 >  ...                        | ...
 
- [^1]: Salas, J.D., 1993. Analysis and modeling of hydrologic time series. In: Maidment, D.R. (Ed.), Handbook of hydrology. McGraw-Hill, pp. 1-72.
+ [^1]: Salas, J.D., 1993. Analysis and modeling of hydrologic time series. In: Maidment, D.R. (Ed.), Handbook of Hydrology. McGraw-Hill, pp. 1-72.
