@@ -1,6 +1,6 @@
 classdef Qsynth < handle
-    % Qsynth Implementing an approach to generate artificial runoff time series
-    % according to Salas (1993)
+    % Qsynth Implementing an approach to generate artificial daily streamflow
+    % time series according to Salas (1993)
     %
     % MATLAB R2017a
     % (c) Copyright 2017, Robin Schwemmle <rschwemmle@yahoo.de>
@@ -58,20 +58,20 @@ classdef Qsynth < handle
 
         function perennial(obj)
            % Testing if river is perennial. Otherwise rasing ERROR!
-           if (obj.tt_obs.Q==0)
+           if any(obj.tt_obs.Q==0)
                disp('River is not perennial. Algorithm is not appropriate!')
            end
         end
 
-        function Q_ts_filled = fillgaps(~, Q_ts)
+        function Q_ts_filled = fillgaps(~, Q)
             % Filling gaps using autoregressive modeling. Using half the
             % length of the gap as number of samples in the estimation.
             % TODO: Add condition for no gaps
-            Q_NA = double(isnan(Q_ts));
+            Q_NA = double(isnan(Q));
             N_NA = sum(Q_NA);
             if (N_NA == 0)
                 disp('No Gaps in observed runoff time series!')
-                Q_ts_filled = Q_ts;
+                Q_ts_filled = Q;
             elseif (N_NA >= 1)
                 NA_idx = find(Q_NA==1);
                 idx = [1:1:length(NA_idx)]';
@@ -87,20 +87,23 @@ classdef Qsynth < handle
                 x(:,1) = tt_obs_NA_idx - (diff(t_idx)-1);
                 x(:,3) = x(:,2) - x(:,1);
 
-                Q_min = nanmin(Q_ts);
+                Q_min = nanmin(Q);
 
                 for i = 1:length(tt_obs_NA_idx)
                     maxlen = ceil(x(i,3)/2);
                     if (maxlen == 1)
-                        y = fillgaps(Q_ts,maxlen+2);
-                        Q_ts(x(i,1):x(i,2),1) = y(x(i,1):x(i,2),1);
+                        y = fillgaps(Q,maxlen+2);
+                        Q(x(i,1):x(i,2),1) = y(x(i,1):x(i,2),1);
                     elseif (maxlen > 1)
-                        y = fillgaps(Q_ts,maxlen+1);
-                        Q_ts(x(i,1):x(i,2),1) = y(x(i,1):x(i,2),1);
+                        y = fillgaps(Q,maxlen+1);
+                        Q(x(i,1):x(i,2),1) = y(x(i,1):x(i,2),1);
+                    elseif (maxlen == 0)
+                        y = fillmissing(Q,'movmedian',3);
+                        Q(x(i,1),1) = y(x(i,1),1);
                     end
                 end
-                Q_ts(Q_ts<0) = Q_min;
-                Q_ts_filled = Q_ts;
+                Q(Q<0) = Q_min;
+                Q_ts_filled = Q;
             end
         end
 
@@ -112,12 +115,12 @@ classdef Qsynth < handle
 
         function Q_log = logtransform(~, Q)
             % Logarithmic transformation of runoff time series.
-            Q_log = log(Q);
+            Q_log = log(Q+1);
         end
 
         function testseas(obj)
             % Testing visually for prevailing seasonality by plotting the runoff
-            % regime and the pard� coefficient.
+            % regime and the parde coefficient.
             Q_mean = nanmean(obj.tt_obs.Q);
             obj.tt_obs.DD = day(obj.tt_obs.Date, 'dayofyear');
             tt_obs_mon = retime(obj.tt_obs, 'monthly', 'mean');
@@ -269,7 +272,7 @@ classdef Qsynth < handle
                 obj.tt_syn.Q_rm_std(i) = Q_std_daily_fit.nanstd_Q_trans(Q_std_daily_fit.DD==d);
             end
 
-            Q_sim = exp(obj.tt_syn.Q_sim.*obj.tt_syn.Q_rm_std+obj.tt_syn.Q_rm_mean);
+            Q_sim = exp(obj.tt_syn.Q_sim.*obj.tt_syn.Q_rm_std+obj.tt_syn.Q_rm_mean)-1;
         end
 
         function Q_sim = regeneraterunoff(~, EstMdl, tt)
@@ -278,7 +281,7 @@ classdef Qsynth < handle
             % standardization and logarithmic transformation.
             [tt.Q_sim,tt.E] = simulate(EstMdl,size(tt,1));
 
-            Q_sim = exp(tt.Q_sim.*tt.Q_rm_std+tt.Q_rm_mean);
+            Q_sim = exp(tt.Q_sim.*tt.Q_rm_std+tt.Q_rm_mean)-1;
         end
 
         function Q_sim = cutpeaksrgm(obj, Q_max, EstMdl)
@@ -451,6 +454,7 @@ classdef Qsynth < handle
                 t.Q_sim_dma(t.ws==7) = t.ma_7(t.ws==7);
                 t.Q_sim_dma(t.ws==9) = t.ma_9(t.ws==9);
             end
+            t.Q_sim_dma(t.Q_sim_dma<0) = 0;
             Q=t.Q_sim_dma;
         end
 
