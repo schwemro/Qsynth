@@ -13,9 +13,9 @@ clc;
 tic
 approach=1; % 1 = 'AR' or 2 = 'ARMA'
 opt_val = zeros(10,1);
-Qsyn = Qsynth(approach, '01-01-2000', '31-12-2019');
+Qsyn = Qsynth(approach, '01-01-2011', '31-12-2030');
 Qsyn.folderres('pre');
-Qsyn.importts('input/pfinz_00_06.csv', 'dd.MM.yyyy');
+Qsyn.importts('input/inverliever_11_16.csv', 'dd-MM-yyyy');
 Qsyn.perennial();
 Qsyn.tt_obs.Q = Qsyn.fillgaps(Qsyn.tt_obs.Q);
 Qsyn.tt_obs.Q_trans = Qsyn.logtransform(Qsyn.tt_obs.Q);
@@ -24,8 +24,7 @@ Qsyn.rmseas(Qsyn.Q_regime_daily, Qsyn.Q_std_daily);
 Qsyn.determineorder();
 Qsyn.selectmodel();
 Q_max = max(Qsyn.tt_obs.Q)*1.1;
-i=1;
-for i =1:10
+for i = 1:10
     prog = (i/10)*100;
     disp([num2str(prog) '%'])
     Qsyn.folderres(num2str(i));
@@ -45,7 +44,7 @@ for i =1:10
     Qsyn.teststats();
     Qsyn.teststatstoxls();
     Qsyn.Qsimtocsv(Q_ma, 'syn_fin');
-    
+
     f = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
     hold on
     plot(Qsyn.tt_obs.Date, Qsyn.tt_obs.Q, 'b');
@@ -57,7 +56,7 @@ for i =1:10
     grid;
     xlabel('Date');
     ylabel('Q [m^3/s]');
-    xlim(datetime(2000,[1 12],[1 31]));
+    xlim(datetime(Qsyn.tt_obs.YYYY(1),[1 12],[1 31]));
     xtickformat('dd-MMM-yyyy');
     legend({'Q_{obs}','Q_{syn}'},'Box','off');
     saveas(f,[Qsyn.dir_results '/Q_obs_vs_Q_syn.fig']);
