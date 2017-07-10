@@ -19,12 +19,12 @@ Qsyn.determineorder();
 Qsyn.selectmodel();
 close all;
 Q_max = max(Qsyn.tt_obs.Q)*1.1;
-clusters = {};
+clusters = {}; % building clusters which are necessary for the parallelization
 for i = 1:l
    clusters{1,i} = Qsyn;
 end
-parpool('local');
-ppm = ParforProgMon('Progress', l, 1);
+parpool('local'); % Parallelization of the loop
+ppm = ParforProgMon('Progress', l, 1); % display progress, not working yet
 parfor i = 1:numel(clusters)
     clusters{1,i}.folderres(num2str(i));
     Q_sim1 = clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
