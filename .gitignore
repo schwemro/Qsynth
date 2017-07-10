@@ -1,5 +1,6 @@
 # which files to ignore
 *.m~
+clearws.m
 *.mex*
 *.asv
 *.log
