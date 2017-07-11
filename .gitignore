@@ -2,6 +2,7 @@
 *.m~
 clearws.m
 opt_val.txt
+main.m
 *.mex*
 *.asv
 *.log
