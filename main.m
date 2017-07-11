@@ -9,7 +9,7 @@ approach=1; % 1 = 'AR' or 2 = 'ARMA'
 opt_val = zeros(10,1);
 Qsyn = Qsynth(approach, '01-01-2011', '31-12-2030');
 Qsyn.folderres('pre');
-Qsyn.importts('input/inverliever_11_16.csv', 'dd-MM-yyyy', 'N/A');
+Qsyn.importts('input/inverliever_11_16.csv', 'dd/MM/yyyy', 'N/A');
 Qsyn.perennial();
 Qsyn.tt_obs.Q = Qsyn.fillgaps(Qsyn.tt_obs.Q);
 Qsyn.tt_obs.Q_trans = Qsyn.logtransform(Qsyn.tt_obs.Q);
