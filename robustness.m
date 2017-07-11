@@ -15,7 +15,7 @@ IHA_mc = zeros(l,34);
 test_stats_mc = zeros(l,5);
 Qsyn = Qsynth(approach, '01-01-1995', '31-12-2015');
 Qsyn.folderres('pre');
-Qsyn.importts('input/89006_95_02.csv', 'dd/MM/yyyy');
+Qsyn.importts('input/89006_95_02.csv', 'dd/MM/yyyy','N/A');
 Qsyn.perennial();
 Qsyn.tt_obs.Q = Qsyn.fillgaps(Qsyn.tt_obs.Q);
 Qsyn.tt_obs.Q_trans = Qsyn.logtransform(Qsyn.tt_obs.Q);
