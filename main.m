@@ -9,7 +9,7 @@ approach=1; % 1 = 'AR' or 2 = 'ARMA'
 opt_val = zeros(10,1);
 Qsyn = Qsynth(approach, '01-01-2011', '31-12-2030');
 Qsyn.folderres('pre');
-Qsyn.importts('input/inverliever_11_16.csv', 'dd-MM-yyyy');
+Qsyn.importts('input/inverliever_11_16.csv', 'dd-MM-yyyy', 'N/A');
 Qsyn.perennial();
 Qsyn.tt_obs.Q = Qsyn.fillgaps(Qsyn.tt_obs.Q);
 Qsyn.tt_obs.Q_trans = Qsyn.logtransform(Qsyn.tt_obs.Q);
@@ -24,7 +24,7 @@ for i = 1:l
    clusters{1,i} = Qsyn;
 end
 parpool('local'); % Parallelization of the loop
-ppm = ParforProgMon('Progress', l, 1); % display progress, not working yet
+% ppm = ParforProgMon('Progress', l, 1); % display progress, not working yet
 parfor i = 1:numel(clusters)
     clusters{1,i}.folderres(num2str(i));
     Q_sim1 = clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
@@ -43,7 +43,7 @@ parfor i = 1:numel(clusters)
     clusters{1,i}.teststats();
     clusters{1,i}.teststatstoxls();
     clusters{1,i}.Qsimtocsv(Q_ma, 'syn_fin');
-    ppm.increment();
+%     ppm.increment();
 
     f = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
     hold on
