@@ -39,9 +39,9 @@ classdef Qsynth < handle
             obj.end_date = datetime(end_date,'InputFormat','dd-MM-yyyy');
         end
 
-        function importts(obj, filepath_str, dateformat_str)
+        function importts(obj, filepath_str, dateformat_str, na_str)
             % Import runoff time series. Daily values and .csv-file are required.
-            T = readtable(filepath_str,'TreatAsEmpty','N/A');
+            T = readtable(filepath_str,'TreatAsEmpty',na_str);
             T.Properties.VariableNames = {'Date' 'Q'};
             Date = datetime(T.Date,'InputFormat',dateformat_str);
             obj.tt_obs = timetable(Date,T.Q);
@@ -786,7 +786,7 @@ classdef Qsynth < handle
            xlabel('Month');
            ylabel('Volume [km^3]');
            xticks(1:1:12);
-           saveas(f3,[obj.dir_results '/total_volume_mm']);
+           saveas(f3,[obj.dir_results '/total_volume_mm.fig']);
         end
 
         function teststats(obj)
@@ -804,6 +804,14 @@ classdef Qsynth < handle
             obj.test_stats(4,2) = min(obj.tt_syn.Q_sim_re);
             obj.test_stats(5,1) = max(obj.tt_obs.Q);
             obj.test_stats(5,2) = max(obj.tt_syn.Q_sim_re);
+
+            f1 = figure('Name','Test statistic','NumberTitle','off');
+            bar([obj.test_stats(:,1) obj.test_stats(:,2)])
+            legend({'Q_{obs}','Q_{syn}'},'Box','off')
+            ylabel('Q [m^3/s]');
+            xticks([1 2 3 4 5])
+            xticklabels({'Mean', 'Std', 'Skew', 'Min', 'Max'})
+            saveas(f1, [obj.dir_results '/test_stats.fig']);
         end
 
         function teststatstoxls(obj)
