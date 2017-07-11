@@ -115,7 +115,7 @@ classdef Qsynth < handle
 
         function Q_log = logtransform(~, Q)
             % Logarithmic transformation of runoff time series.
-            Q_log = log(Q+1);
+            Q_log = log(Q);
         end
 
         function testseas(obj)
@@ -272,7 +272,7 @@ classdef Qsynth < handle
                 obj.tt_syn.Q_rm_std(i) = Q_std_daily_fit.nanstd_Q_trans(Q_std_daily_fit.DD==d);
             end
 
-            Q_sim = exp(obj.tt_syn.Q_sim.*obj.tt_syn.Q_rm_std+obj.tt_syn.Q_rm_mean)-1;
+            Q_sim = exp(obj.tt_syn.Q_sim.*obj.tt_syn.Q_rm_std+obj.tt_syn.Q_rm_mean);
         end
 
         function Q_sim = regeneraterunoff(~, EstMdl, tt)
@@ -281,7 +281,7 @@ classdef Qsynth < handle
             % standardization and logarithmic transformation.
             [tt.Q_sim,tt.E] = simulate(EstMdl,size(tt,1));
 
-            Q_sim = exp(tt.Q_sim.*tt.Q_rm_std+tt.Q_rm_mean)-1;
+            Q_sim = exp(tt.Q_sim.*tt.Q_rm_std+tt.Q_rm_mean);
         end
 
         function Q_sim = cutpeaksrgm(obj, Q_max, EstMdl)
