@@ -454,7 +454,6 @@ classdef Qsynth < handle
                 t.Q_sim_dma(t.ws==7) = t.ma_7(t.ws==7);
                 t.Q_sim_dma(t.ws==9) = t.ma_9(t.ws==9);
             end
-            t.Q_sim_dma(t.Q_sim_dma<0) = 0;
             Q=t.Q_sim_dma;
         end
 
