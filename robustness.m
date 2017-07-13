@@ -22,8 +22,8 @@ Qsyn.tt_obs.Q_trans = Qsyn.logtransform(Qsyn.tt_obs.Q);
 Qsyn.testseas();
 Qsyn.rmseas(Qsyn.Q_regime_daily, Qsyn.Q_std_daily);
 Qsyn.determineorder();
-Qsyn.selectmodel();
-clusters = {};
+Qsyn.selectmodel(Qsyn.tt_obs.Q_trans_stand_d);
+clusters = {1,l};
 close all;
 for i = 1:l
    clusters{1,i} = Qsyn;
