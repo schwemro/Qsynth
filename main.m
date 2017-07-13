@@ -16,10 +16,10 @@ Qsyn.tt_obs.Q_trans = Qsyn.logtransform(Qsyn.tt_obs.Q);
 Qsyn.testseas();
 Qsyn.rmseas(Qsyn.Q_regime_daily, Qsyn.Q_std_daily);
 Qsyn.determineorder();
-Qsyn.selectmodel();
+Qsyn.selectmodel(Qsyn.tt_obs.Q_trans_stand_d);
 close all;
 Q_max = max(Qsyn.tt_obs.Q)*1.1;
-clusters = {}; % building clusters which are necessary for the parallelization
+clusters = {1,l}; % building clusters which are necessary for the parallelization
 for i = 1:l
    clusters{1,i} = Qsyn;
 end
@@ -45,21 +45,32 @@ parfor i = 1:numel(clusters)
     clusters{1,i}.Qsimtocsv(Q_ma, 'syn_fin');
 %     ppm.increment();
 
-    f = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
+    f1 = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
     hold on
     plot(clusters{1,i}.tt_obs.Date, clusters{1,i}.tt_obs.Q, 'b');
     plot(clusters{1,i}.tt_syn.Date, Q_ma, 'r');
     hold off
-    %     h1 = [Qsyn.tt_syn.Date(1) Qsyn.tt_syn.Date(end)];
-    %     h2 = [Q_max Q_max];
-    %     line(h1,h2,'Color','black','LineStyle','-.')
     grid;
     xlabel('Date');
     ylabel('Q [m^3/s]');
     xlim(datetime(clusters{1,i}.tt_obs.YYYY(1),[1 12],[1 31]));
     xtickformat('dd-MMM-yyyy');
     legend({'Q_{obs}','Q_{syn}'},'Box','off');
-    saveas(f,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn.fig']);
+    saveas(f1,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn_' num2str(clusters{1,i}.tt_obs.YYYY(1)) '.fig']);
+    saveas(f1,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn_' num2str(clusters{1,i}.tt_obs.YYYY(1)) '.pdf']);
+    
+    f2 = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
+    hold on
+    plot(clusters{1,i}.tt_obs.Date, clusters{1,i}.tt_obs.Q, 'b');
+    plot(clusters{1,i}.tt_syn.Date, Q_ma, 'r');
+    hold off
+    grid;
+    xlabel('Date');
+    ylabel('Q [m^3/s]');
+    xtickformat('dd-MMM-yyyy');
+    legend({'Q_{obs}','Q_{syn}'},'Box','off');
+    saveas(f2,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn.fig']);
+    saveas(f2,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn.pdf']);
     close all;
 end
 
@@ -71,3 +82,4 @@ disp(['Folder ' num2str(idx) ' shows the best results!'])
 dlmwrite('opt_val.txt',opt_val,'delimiter','\t','precision',3);
 t = round(toc/60,1);
 disp(['Total runtime: ' num2str(t) ' min'])
+% save('inverliever_AR.mat');
