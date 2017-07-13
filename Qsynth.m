@@ -2,7 +2,8 @@ classdef Qsynth < handle
     % Qsynth Implementing an approach to generate artificial daily streamflow
     % time series according to Salas (1993)
     %
-    % MATLAB R2017a
+    % Requires: MY_XTICKLABELS
+    % MATLAB R2017a,
     % (c) Copyright 2017, Robin Schwemmle <rschwemmle@yahoo.de>
 
     % TODO: deal with wrong inputs, raise ERROR.
@@ -32,15 +33,17 @@ classdef Qsynth < handle
     end
 
     methods
-        function obj = Qsynth(a, start_date, end_date)
-            % Adding approach which is applied as well as start and end date of synthetic runoff time series.
-            obj.approach = a;
+        function obj = Qsynth(approach, start_date, end_date)
+            % Initializing object. Input arguments are approach which is
+            % applied as well as start and end date of synthetic runoff time series.
+            obj.approach = approach;
             obj.start_date = datetime(start_date,'InputFormat','dd-MM-yyyy');
             obj.end_date = datetime(end_date,'InputFormat','dd-MM-yyyy');
         end
 
         function importts(obj, filepath_str, dateformat_str, na_str)
-            % Import runoff time series. Daily values and .csv-file are required.
+            % Import runoff time series. Input arguments are path to
+            % .csv-file, format of date column and string which marks NaN.
             T = readtable(filepath_str,'TreatAsEmpty',na_str);
             T.Properties.VariableNames = {'Date' 'Q'};
             Date = datetime(T.Date,'InputFormat',dateformat_str);
@@ -51,22 +54,22 @@ classdef Qsynth < handle
             obj.tt_obs.dd = day(obj.tt_obs.Date);
             obj.tt_obs.MM = month(obj.tt_obs.Date);
             obj.tt_obs.YYYY = year(obj.tt_obs.Date);
-%             obj.tt_obs.hYYYY = year(obj.tt_obs.Date);
-%             obj.tt_obs.hYYYY(obj.tt_obs.MM>10) = obj.tt_obs.hYYYY(obj.tt_obs.MM>10)+1;
             obj.N_obs = length(obj.tt_obs.Q);
         end
 
         function perennial(obj)
            % Testing if river is perennial. Otherwise rasing ERROR!
            if any(obj.tt_obs.Q==0)
-               disp('River is not perennial. Algorithm is not appropriate!')
+               disp('River is not perennial. Approach is not appropriate!')
            end
         end
 
         function Q_ts_filled = fillgaps(~, Q)
-            % Filling gaps using autoregressive modeling. Using half the
+            % Testing if time series exhibits gaps. If there are any gaps,
+            % they are filled by using autoregressive modeling using half the
             % length of the gap as number of samples in the estimation.
-            % TODO: Add condition for no gaps
+            % Input argument is time series. Output argument is time series
+            % without gaps.
             Q_NA = double(isnan(Q));
             N_NA = sum(Q_NA);
             if (N_NA == 0)
@@ -114,13 +117,15 @@ classdef Qsynth < handle
         end
 
         function Q_log = logtransform(~, Q)
-            % Logarithmic transformation of runoff time series.
+            % Logarithmic transformation of runoff time series. Input argument
+            % is time series. Output argument is log transformed time series.
             Q_log = log(Q);
         end
 
         function testseas(obj)
-            % Testing visually for prevailing seasonality by plotting the runoff
-            % regime and the parde coefficient.
+            % Testing visually for prevailing seasonality by plotting the
+            % daily and mothly runoff regime and the parde coefficient.
+            % TODO: runoff regime and std regime as output args.
             Q_mean = nanmean(obj.tt_obs.Q);
             obj.tt_obs.DD = day(obj.tt_obs.Date, 'dayofyear');
             tt_obs_mon = retime(obj.tt_obs, 'monthly', 'mean');
@@ -184,7 +189,10 @@ classdef Qsynth < handle
 
         function rmseas(obj, Q_regime_daily_fit, Q_std_daily_fit)
             % Removing trends and shifts of the runoff time series by
-            % daily standardization
+            % daily standardization. Input argument are daily runoff regime
+            % and the daily standard deviation regime.
+            % TODO: Adjust transfer of input args and the use inside the
+            % function.
             obj.tt_obs.Q_rm_mean = zeros(obj.N_obs,1);
             obj.tt_obs.Q_rm_std = zeros(obj.N_obs,1);
 
@@ -205,7 +213,7 @@ classdef Qsynth < handle
         end
 
         function determineorder(obj)
-            % Determine model order by using the autocorrelation function
+            % Determine model order by using the autocorrelation
             % and the partial autocorrelation function.
             acf = autocorr(obj.tt_obs.Q_trans_stand_d, obj.N_obs-1);
             bounds_acf = [0.4;-0.4];
@@ -241,20 +249,22 @@ classdef Qsynth < handle
             saveas(f1,[obj.dir_results '/ACF_and_PACF.fig']);
         end
 
-        function selectmodel(obj)
-            % Create time series model and estimate model paramters.
-            % Requires transformed-to-normal and standardized runoff time
+        function selectmodel(obj, Q_trans_stand)
+            % Initialize object of time series model and estimate the according
+            % model paramters. Input argument is the log-transformed and standardized streamflow time
             % series.
             Mdl = arima(obj.p,0,obj.q);
 
-            obj.EstMdl = estimate(Mdl,obj.tt_obs.Q_trans_stand_d);
+            obj.EstMdl = estimate(Mdl,Q_trans_stand);
             obj.p = length(obj.EstMdl.AR);
             obj.q = length(obj.EstMdl.MA);
         end
 
         function Q_sim = generaterunoff(obj, EstMdl, Q_regime_daily_fit, Q_std_daily_fit)
-            % Generating articial runoff time series. Readding the linear trend as well as undoing the
-            % standardization and logarithmic transformation.
+            % Generating articial streamflow time series. Readding the trend as well as undoing the
+            % standardization and logarithmic transformation. Input arguments are the estimated model,
+            % daily runoff regime and the daily standard deviation regime. Output argument is the simulated
+            % streamflow time series.
             Date = [obj.start_date:obj.end_date]';
             obj.N_sim = length(Date);
             obj.tt_syn = timetable(Date);
@@ -275,18 +285,20 @@ classdef Qsynth < handle
             Q_sim = exp(obj.tt_syn.Q_sim.*obj.tt_syn.Q_rm_std+obj.tt_syn.Q_rm_mean);
         end
 
-        function Q_sim = regeneraterunoff(~, EstMdl, tt)
-            % Generating articial runoff time series. Requires number of simulations
-            % to be simulated. Also readding the trend as well as undoing the
-            % standardization and logarithmic transformation.
-            [tt.Q_sim,tt.E] = simulate(EstMdl,size(tt,1));
+        function Q_sim = regeneraterunoff(~, EstMdl, tt_sim)
+            % Regenerating articial streamflow time series. Input arguments are
+            % the estimated model and the timetable of the synthetic time series.
+            % Output argument is the simulated streamflow time series.
+            [tt_sim.Q_sim,tt_sim.E] = simulate(EstMdl,size(tt_sim,1));
 
-            Q_sim = exp(tt.Q_sim.*tt.Q_rm_std+tt.Q_rm_mean);
+            Q_sim = exp(tt_sim.Q_sim.*tt_sim.Q_rm_std+tt_sim.Q_rm_mean);
         end
 
         function Q_sim = cutpeaksrgm(obj, Q_max, EstMdl)
             % Cut unlikely high peaks (Q_sim > Q_max + .1*Q_max) by regenerating
-            % time series with model. Requires model.
+            % time series with model. Starts at 5 day backward shift. Input arguments
+            % are above which the peaks will be cutted and the estimated model.
+            % Output argument is the simulated streamflow time series.
             if any(obj.tt_syn.Q_sim_re>Q_max)
                 tau = 5;
                 Q_sim_cp_tt = obj.tt_syn;
@@ -310,7 +322,7 @@ classdef Qsynth < handle
                     end
                 end
             else
-                disp('No occurence of unrealistic high peaks!')
+                disp('No occurence of unlikely high peaks!')
                 Q_sim = obj.tt_syn.Q_sim_re;
             end
         end
@@ -806,11 +818,13 @@ classdef Qsynth < handle
 
             f1 = figure('Name','Test statistic','NumberTitle','off');
             bar([obj.test_stats(:,1) obj.test_stats(:,2)])
-            legend({'Q_{obs}','Q_{syn}'},'Box','off')
+            grid;
+            legend({'Q_{obs}','Q_{syn}'},'Box','off','Location','northwest')
             ylabel('Q [m^3/s]');
             xticks([1 2 3 4 5])
             xticklabels({'Mean', 'Std', 'Skew', 'Min', 'Max'})
             saveas(f1, [obj.dir_results '/test_stats.fig']);
+            saveas(f1, [obj.dir_results '/test_stats.pdf']);
         end
 
         function teststatstoxls(obj)
