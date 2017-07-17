@@ -10,6 +10,7 @@ opt_val.txt
 *.gz
 *.pdf
 *.fig
+*.csv
 .DS_Store
 # which folders to ignore
 /Tisean_3.0.1/
