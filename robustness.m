@@ -33,13 +33,13 @@ for i = 1:l
    clusters_perc{1,i};
 end
 parpool('local');
-ppm = ParforProgMon('Progress', l);
+% ppm = ParforProgMon('Progress', l);
 parfor i = 1:numel(clusters)
     clusters{1,i}.folderres(num2str(i));
     Q_sim1 = clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
     clusters{1,i}.tt_syn.Q_sim_re = Q_sim1;
     Q_max = max(clusters{1,i}.tt_obs.Q)*1.1;
-    Q_cp = clusters{1,i}.cutpeaksrgm(Q_max,clusters{1,i}.EstMdl);
+    Q_cp = clusters{1,i}.cutpeaks(Q_max,clusters{1,i}.EstMdl);
     clusters{1,i}.tt_syn.Q_sim_re = Q_cp;
     clusters{1,i}.optMAwMWS();
     Q_ma = clusters{1,i}.MAwMWS(Q_cp,clusters{1,i}.w,clusters{1,i}.Qx,'lin');
@@ -59,7 +59,7 @@ parfor i = 1:numel(clusters)
     [IHA_ind_syn] = IHA_indicators( clusters{1,i}.tt_syn.Q_sim_re, perc, init_date, init_year );
     IHA_mc(i,:) = mean(IHA_ind_syn,2);
     rmdir(num2str(i));
-    ppm.increment();
+    % ppm.increment();
 end
 
 acf_lq = prctile(acf_mc,2.5,2);
