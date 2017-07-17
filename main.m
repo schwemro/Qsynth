@@ -29,7 +29,7 @@ parfor i = 1:numel(clusters)
     clusters{1,i}.folderres(num2str(i));
     Q_sim1 = clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
     clusters{1,i}.tt_syn.Q_sim_re = Q_sim1;
-    Q_cp = clusters{1,i}.cutpeaksrgm(Q_max,clusters{1,i}.EstMdl);
+    Q_cp = clusters{1,i}.cutpeaks(Q_max,clusters{1,i}.EstMdl,clusters{1,i}.tt_syn);
     clusters{1,i}.tt_syn.Q_sim_re = Q_cp;
     clusters{1,i}.optMAwMWS();
     opt_val(i,1) = clusters{1,i}.opt_val;
@@ -41,8 +41,8 @@ parfor i = 1:numel(clusters)
     clusters{1,i}.compareIHA();
     clusters{1,i}.volume();
     clusters{1,i}.teststats();
-    clusters{1,i}.teststatstoxls();
-    clusters{1,i}.Qsimtocsv(Q_ma, 'syn_fin');
+    clusters{1,i}.teststatstotxt();
+    clusters{1,i}.Qtocsv(clusters{1,i}.tt_syn.Date, Q_ma, 'syn_fin');
 %     ppm.increment();
 
     f1 = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
@@ -58,7 +58,7 @@ parfor i = 1:numel(clusters)
     legend({'Q_{obs}','Q_{syn}'},'Box','off');
     saveas(f1,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn_' num2str(clusters{1,i}.tt_obs.YYYY(1)) '.fig']);
     saveas(f1,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn_' num2str(clusters{1,i}.tt_obs.YYYY(1)) '.pdf']);
-    
+
     f2 = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
     hold on
     plot(clusters{1,i}.tt_obs.Date, clusters{1,i}.tt_obs.Q, 'b');
@@ -80,6 +80,7 @@ delete(p)
 [val, idx] = min(opt_val);
 disp(['Folder ' num2str(idx) ' shows the best results!'])
 dlmwrite('opt_val.txt',opt_val,'delimiter','\t','precision',3);
+
 t = round(toc/60,1);
 disp(['Total runtime: ' num2str(t) ' min'])
 % save('inverliever_AR.mat');
