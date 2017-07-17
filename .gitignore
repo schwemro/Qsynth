@@ -1,6 +1,7 @@
 # which files to ignore
 *.m~
 clearws.m
+obsandsyn.m
 opt_val.txt
 *.mex*
 *.asv
