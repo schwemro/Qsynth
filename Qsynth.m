@@ -294,14 +294,15 @@ classdef Qsynth < handle
             Q_sim = exp(tt_sim.Q_sim.*tt_sim.Q_rm_std+tt_sim.Q_rm_mean);
         end
 
-        function Q_sim = cutpeaksrgm(obj, Q_max, EstMdl)
+        function Q_sim = cutpeaks(obj, Q_max, EstMdl, tt_sim)
             % Cut unlikely high peaks (Q_sim > Q_max + .1*Q_max) by regenerating
             % time series with model. Starts at 5 day backward shift. Input arguments
-            % are above which the peaks will be cutted and the estimated model.
+            % are the threshold above which the peaks will be cutted, the estimated model
+            % and the timetable of the synthetic time series.
             % Output argument is the simulated streamflow time series.
             if any(obj.tt_syn.Q_sim_re>Q_max)
                 tau = 5;
-                Q_sim_cp_tt = obj.tt_syn;
+                Q_sim_cp_tt = tt_sim;
                 while 1
                     peak = find(Q_sim_cp_tt.Q_sim_re>Q_max,1);
                     if (peak>tau)
@@ -380,7 +381,9 @@ classdef Qsynth < handle
 
         function Q = MAwMWS(~, Q, N_ws, prc, method)
             % Filtering time series by moving average with moving window
-            % size.
+            % size. Input arguments are time series, the starting window size,
+            % streamflow percentile as far as the filtering is applied and
+            % method used for spacing. Output argument is a filtered time series.
             t = table();
             t.Q = Q;
             t.Q_sim_dma = zeros(length(t.Q),1);
@@ -467,6 +470,13 @@ classdef Qsynth < handle
                 t.Q_sim_dma(t.ws==9) = t.ma_9(t.ws==9);
             end
             Q=t.Q_sim_dma;
+
+            f1 = figure('Name','Moving average with moving window size','NumberTitle','off');
+            stairs(ws(:,1), ws(:,2), 'k');
+            grid;
+            xlabel('Q [m^3/s]');
+            ylabel('Window size [Days]');
+            saveas(f1,[obj.dir_results '/MAwMWS.fig'])
         end
 
         function testnorm(obj)
@@ -491,19 +501,19 @@ classdef Qsynth < handle
             x1_n = min(xlims_n(:,1));
             x2_n = max(xlims_n(:,2));
 
-            h1 = histogram(obj.tt_obs.Q,'Normalization','probability');
+            h1 = histogram(obj.tt_obs.Q,'Normalization','probability','FaceColor','b');
             h1v = h1.Values;
             h1nb = h1.NumBins;
-            h2 = histogram(obj.tt_obs.Q_trans,'Normalization','probability');
+            h2 = histogram(obj.tt_obs.Q_trans,'Normalization','probability','FaceColor','b');
             h2v = h2.Values;
             h2nb = h2.NumBins;
-            h3 = histogram(obj.tt_obs.Q_trans_stand_d,'Normalization','probability');
+            h3 = histogram(obj.tt_obs.Q_trans_stand_d,'Normalization','probability','FaceColor','b');
             h3v = h3.Values;
             h3nb = h3.NumBins;
-            h4 = histogram(obj.tt_syn.Q_sim,'Normalization','probability');
+            h4 = histogram(obj.tt_syn.Q_sim,'Normalization','probability','FaceColor','r');
             h4v = h4.Values;
             h4nb = h4.NumBins;
-            h5 = histogram(obj.tt_syn.Q_sim_re,'Normalization','probability');
+            h5 = histogram(obj.tt_syn.Q_sim_re,'Normalization','probability','FaceColor','r');
             h5v = h5.Values;
             h5nb = h5.NumBins;
 
@@ -531,28 +541,28 @@ classdef Qsynth < handle
 
             f1 = figure('Name','Histograms','NumberTitle','off');
             subplot(5, 1, 1);
-            histogram(obj.tt_obs.Q,nbins_nn,'Normalization','probability');
+            histogram(obj.tt_obs.Q,nbins_nn,'Normalization','probability','FaceColor','b');
             grid; title('Nonnormally Distributed');
             xlim([x1_nn x2_nn]);
             ylim([0 y2_nn]);
             subplot(5, 1, 2);
-            histogram(obj.tt_obs.Q_trans,nbins_n,'Normalization','probability');
+            histogram(obj.tt_obs.Q_trans,nbins_n,'Normalization','probability','FaceColor','b');
             grid; title('Transformed-to-normal');
             xlim([x1_n x2_n]);
             ylim([0 y2_n]);
             subplot(5, 1, 3);
-            histogram(obj.tt_obs.Q_trans_stand_d,nbins_n,'Normalization','probability');
+            histogram(obj.tt_obs.Q_trans_stand_d,nbins_n,'Normalization','probability','FaceColor','b');
             grid; title('Transformed-to-normal & Standardized (Observed)');
             xlim([x1_n x2_n]);
             ylim([0 y2_n]);
             ylabel('Probability');
             subplot(5, 1, 4);
-            histogram(obj.tt_syn.Q_sim,nbins_n,'Normalization','probability');
+            histogram(obj.tt_syn.Q_sim,nbins_n,'Normalization','probability','FaceColor','r');
             grid; title(['Transformed-to-normal & Standardized (' obj.approach_str{obj.approach} ')']);
             xlim([x1_n x2_n]);
             ylim([0 y2_n]);
             subplot(5, 1, 5);
-            histogram(obj.tt_syn.Q_sim_re,nbins_nn,'Normalization','probability');
+            histogram(obj.tt_syn.Q_sim_re,nbins_nn,'Normalization','probability','FaceColor','r');
             grid; title(obj.approach_str{obj.approach});
             xlim([x1_nn x2_nn]);
             ylim([0 y2_nn]);
@@ -562,12 +572,12 @@ classdef Qsynth < handle
 
             f2 = figure('Name','Histograms','NumberTitle','off');
             s1 = subplot(2, 1, 1);
-            histogram(obj.tt_obs.Q,nbins_nn,'Normalization','probability');
+            histogram(obj.tt_obs.Q,nbins_nn,'Normalization','probability','FaceColor','b');
             grid; title('Nonnormally Distributed');
             xlim([x1_nn x2_nn]);
             ylim([0 y2_nn]);
             s2 = subplot(2, 1, 2);
-            histogram(obj.tt_syn.Q_sim_re,nbins_nn,'Normalization','probability');
+            histogram(obj.tt_syn.Q_sim_re,nbins_nn,'Normalization','probability','FaceColor','r');
             grid; title(obj.approach_str{obj.approach});
             xlim([x1_nn x2_nn]);
             ylim([0 y2_nn]);
@@ -583,9 +593,8 @@ classdef Qsynth < handle
 
         function testautocor(obj)
             % Testing visually for correlation in the Residuals and comapring
-            % the ACF of the observed and the synthetic runoff time series and
+            % the ACF of the observed and the synthetic streamflow and
             % the PACF respectively.
-
             Q_obs = obj.tt_obs.Q;
             Q_syn = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
 
@@ -599,7 +608,7 @@ classdef Qsynth < handle
             saveas(f1,[obj.dir_results '/ACF_of_Residuals.fig']);
 
             f2 = figure('Name','Histogram of Residuals','NumberTitle', 'off');
-            histogram(obj.tt_syn.E);
+            histogram(obj.tt_syn.E,'FaceColor','k');
             grid; title('Distribution of \epsilon');
 %             saveas(f2,[obj.dir_results '/Histogram_of_Residuals.pdf']);
             saveas(f2,[obj.dir_results '/Histogram_of_Residuals.fig']);
@@ -640,7 +649,7 @@ classdef Qsynth < handle
         function ACFmonths(obj)
             % Splitting the runoff time series into single months,
             % calculate the ACF and compare between observed and synthetic
-            % runoff time series.
+            % streamflow.
             obj.tt_obs.Q_sim_re = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
             for i = 1:12
                 f = figure('Name',['ACF of Obs & Syn ' num2str(i)],'NumberTitle','off','defaultFigureVisible','off');
@@ -663,8 +672,7 @@ classdef Qsynth < handle
 
         function compareIHA(obj)
             % Compare the IHA indicators (Richter et al. 1996) for the
-            % observed and synthetic runoff time series.
-
+            % observed and synthetic streamflow except Group 3.
             Q_obs = obj.tt_obs.Q;
             Q_syn = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
 
@@ -691,7 +699,9 @@ classdef Qsynth < handle
 
             f1 = figure('Name','IHA - Group 1','NumberTitle','off');
             hold on
-            bar([IHA_ind_obs_mean(1:12) IHA_ind_syn_mean(1:12)])
+            b = bar([IHA_ind_obs_mean(1:12) IHA_ind_syn_mean(1:12)]);
+            b(1).FaceColor = 'b';
+            b(2).FaceColor = 'r';
             title('Group 1')
             ylabel('Q [m^3/s]');
             legend({'Q_{obs}','Q_{syn}'},'Box','off')
@@ -700,7 +710,9 @@ classdef Qsynth < handle
 
             f2 = figure('Name','IHA - Group 2','NumberTitle','off');
             hold on
-            bar([IHA_ind_obs_mean(13:22) IHA_ind_syn_mean(13:22)])
+            b = bar([IHA_ind_obs_mean(13:22) IHA_ind_syn_mean(13:22)]);
+            b(1).FaceColor = 'b';
+            b(2).FaceColor = 'r';
             title('Group 2')
             ylabel('Q [m^3/s]');
             legend({'Q_{obs}','Q_{syn}'},'Box','off')
@@ -715,7 +727,9 @@ classdef Qsynth < handle
 
             f3 = figure('Name','IHA - Group 4','NumberTitle','off');
             hold on
-            bar([IHA_ind_obs_mean(27:30) IHA_ind_syn_mean(27:30)])
+            b = bar([IHA_ind_obs_mean(27:30) IHA_ind_syn_mean(27:30)]);
+            b(1).FaceColor = 'b';
+            b(2).FaceColor = 'r';
             title('Group 4')
             legend({'Q_{obs}','Q_{syn}'},'Box','off')
             xp = 1:1:4;
@@ -725,7 +739,9 @@ classdef Qsynth < handle
 
             f4 = figure('Name','IHA - Group 5-1','NumberTitle','off');
             hold on
-            bar([IHA_ind_obs_mean(31:32) IHA_ind_syn_mean(31:32)])
+            b = bar([IHA_ind_obs_mean(31:32) IHA_ind_syn_mean(31:32)]);
+                        b(1).FaceColor = 'b';
+            b(2).FaceColor = 'r';
             title('Group 5 - 1')
             legend({'Q_{obs}','Q_{syn}'},'Box','off')
             xp = [1 2];
@@ -736,7 +752,9 @@ classdef Qsynth < handle
 
             f5 = figure('Name','IHA - Group 5-2','NumberTitle','off');
             hold on
-            bar([IHA_ind_obs_mean(33:34) IHA_ind_syn_mean(33:34)])
+            b = bar([IHA_ind_obs_mean(33:34) IHA_ind_syn_mean(33:34)]);
+            b(1).FaceColor = 'b';
+            b(2).FaceColor = 'r';
             title('Group 5 - 2')
             legend({'Q_{obs}','Q_{syn}'},'Box','off')
             xticks([1 2])
@@ -745,8 +763,8 @@ classdef Qsynth < handle
         end
 
         function volume(obj)
-           % Plotting the cumulated observed and synthetic streamflow
-           % volumes at a monthly and  a yearly scale and the total volumes
+           % Plotting the cumulated volumes of observed and synthetic streamflow
+           % at a monthly and a yearly scale and the total volumes
            % for each month.
            Q_obs = obj.tt_obs.Q;
            Q_syn = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
@@ -769,7 +787,7 @@ classdef Qsynth < handle
            f1 = figure('Name','Cumulated Volume (monthly)','NumberTitle','off');
            hold on
            plot(TT_mm.Time, TT_mm.vol_obs_cum, 'b');
-           plot(TT_mm.Time, TT_mm.vol_syn_cum, 'g');
+           plot(TT_mm.Time, TT_mm.vol_syn_cum, 'r');
            hold off
            grid;
            xlabel('Date');
@@ -781,7 +799,7 @@ classdef Qsynth < handle
            f2 = figure('Name','Cumulated Volume (yearly)','NumberTitle','off');
            hold on
            plot(TT_yy.Time, TT_yy.vol_obs_cum, 'b');
-           plot(TT_yy.Time, TT_yy.vol_syn_cum, 'g');
+           plot(TT_yy.Time, TT_yy.vol_syn_cum, 'r');
            hold off
            grid;
            xlabel('Date');
@@ -792,7 +810,9 @@ classdef Qsynth < handle
 
            f3 = figure('Name','Total Volume (monthly)','NumberTitle','off');
            hold on
-           bar([TT_mm_sum.sum_vol_obs TT_mm_sum.sum_vol_syn])
+           b = bar([TT_mm_sum.sum_vol_obs TT_mm_sum.sum_vol_syn]);
+           b(1).FaceColor = 'b';
+           b(2).FaceColor = 'r';
            legend({'Q_{obs}','Q_{syn}'},'Box','off')
            xlabel('Month');
            ylabel('Volume [km^3]');
@@ -803,7 +823,7 @@ classdef Qsynth < handle
         function teststats(obj)
             % Calculate test staistsic containing mean, standard deviation,
             % skewness coeeficient, minimum and maximum of the observed and
-            % the generated runoff timeseries respectively.
+            % the synthetic streamflow respectively.
             obj.test_stats = zeros(5,2);
             obj.test_stats(1,1) = mean(obj.tt_obs.Q);
             obj.test_stats(1,2) = mean(obj.tt_syn.Q_sim_re);
@@ -817,7 +837,9 @@ classdef Qsynth < handle
             obj.test_stats(5,2) = max(obj.tt_syn.Q_sim_re);
 
             f1 = figure('Name','Test statistic','NumberTitle','off');
-            bar([obj.test_stats(:,1) obj.test_stats(:,2)])
+            b = bar([obj.test_stats(:,1) obj.test_stats(:,2)]);
+            b(1).FaceColor = 'b';
+            b(2).FaceColor = 'r';
             grid;
             legend({'Q_{obs}','Q_{syn}'},'Box','off','Location','northwest')
             ylabel('Q [m^3/s]');
@@ -827,17 +849,18 @@ classdef Qsynth < handle
             saveas(f1, [obj.dir_results '/test_stats.pdf']);
         end
 
-        function teststatstoxls(obj)
-            % Export results of test statistic to .xls.
+        function teststatstotxt(obj)
+            % Export test statistic to .txt..
             B = array2table(obj.test_stats);
             B.Properties.VariableNames = {'Obs' 'Sim'};
             B.Properties.RowNames = {'mean' 'std' 'skew' 'min' 'max'};
-            writetable(B,[obj.dir_results '/test_stats.xls'],'WriteRowNames',true);
+            writetable(B,[obj.dir_results '/test_stats.txt'],'WriteRowNames',true,'Delimiter','\t');
         end
 
-        function Qsimtocsv(obj, Q, fn)
-            % Export synthetic runoff time series to .csv.
-            tt_res = timetable(obj.tt_syn.Date,Q);
+        function Qtocsv(obj, Date, Q, fn)
+            % Export streamflow time series to .csv.. Input arguments
+            % are Date, streamflow and suffix of file name.
+            tt_res = timetable(Date,Q);
             Q_sim_res = timetable2table(tt_res);
             Q_sim_res.Properties.VariableNames = {'DDMMYYYY' 'Q'};
             writetable(Q_sim_res,[obj.dir_results  '/Q_' fn '.csv']);
