@@ -20,13 +20,20 @@ Qsyn.selectmodel(Qsyn.tt_obs.Q_trans_stand_d);
 close all;
 Q_max = max(Qsyn.tt_obs.Q)*1.1;
 clusters = {1,l}; % building clusters which are necessary for the parallelization
-for i = 1:l
-   clusters{1,i} = Qsyn;
+for h = 1:l
+   clusters{1,h} = Qsynth(approach, '01-01-2011', '31-12-2030');
+   clusters{1,h}.folderres(num2str(h));
+   clusters{1,h}.tt_obs = Qsyn.tt_obs;
+   clusters{1,h}.Q_regime_daily = Qsyn.Q_regime_daily;
+   clusters{1,h}.Q_std_daily = Qsyn.Q_std_daily;
+   clusters{1,h}.N_obs = Qsyn.N_obs;
+   clusters{1,h}.p = Qsyn.p;
+   clusters{1,h}.q = Qsyn.q;
+   clusters{1,h}.EstMdl = Qsyn.EstMdl;
 end
 parpool('local'); % Parallelization of the loop
 % ppm = ParforProgMon('Progress', l, 1); % display progress, not working yet
 parfor i = 1:numel(clusters)
-    clusters{1,i}.folderres(num2str(i));
     Q_sim1 = clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
     clusters{1,i}.tt_syn.Q_sim_re = Q_sim1;
     Q_cp = clusters{1,i}.cutpeaks(Q_max,clusters{1,i}.EstMdl,clusters{1,i}.tt_syn);
