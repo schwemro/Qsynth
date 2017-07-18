@@ -379,7 +379,7 @@ classdef Qsynth < handle
             obj.Qx = x2(I_col);
         end
 
-        function Q = MAwMWS(~, Q, N_ws, prc, method)
+        function Q = MAwMWS(obj, Q, N_ws, prc, method)
             % Filtering time series by moving average with moving window
             % size. Input arguments are time series, the starting window size,
             % streamflow percentile as far as the filtering is applied and
