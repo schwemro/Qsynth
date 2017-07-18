@@ -23,19 +23,26 @@ Qsyn.testseas();
 Qsyn.rmseas(Qsyn.Q_regime_daily, Qsyn.Q_std_daily);
 Qsyn.determineorder();
 Qsyn.selectmodel(Qsyn.tt_obs.Q_trans_stand_d);
-clusters = {1,l};
 close all;
-for i = 1:l
-   clusters{1,i} = Qsyn;
+clusters = {1,l}; % building clusters which are necessary for the parallelization
+for h = 1:l
+   clusters{1,h} = Qsynth(approach, '01-01-2011', '31-12-2030');
+   clusters{1,h}.folderres(num2str(h));
+   clusters{1,h}.tt_obs = Qsyn.tt_obs;
+   clusters{1,h}.Q_regime_daily = Qsyn.Q_regime_daily;
+   clusters{1,h}.Q_std_daily = Qsyn.Q_std_daily;
+   clusters{1,h}.N_obs = Qsyn.N_obs;
+   clusters{1,h}.p = Qsyn.p;
+   clusters{1,h}.q = Qsyn.q;
+   clusters{1,h}.EstMdl = Qsyn.EstMdl;
 end
-clusters_perc = {};
+clusters_perc = {1,l};
 for i = 1:l
    clusters_perc{1,i};
 end
 parpool('local');
 % ppm = ParforProgMon('Progress', l);
 parfor i = 1:numel(clusters)
-    clusters{1,i}.folderres(num2str(i));
     Q_sim1 = clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
     clusters{1,i}.tt_syn.Q_sim_re = Q_sim1;
     Q_max = max(clusters{1,i}.tt_obs.Q)*1.1;
@@ -52,11 +59,11 @@ parfor i = 1:numel(clusters)
     mm = clusters{1,i}.tt_syn.MM(1);
     dd = clusters{1,i}.tt_syn.dd(1);
     date = [ dd mm yy ];
-    perc.q25th = prctile(clusters{1,i}.tt_syn.Q_sim_re,25);
-    perc.q75th = prctile(clusters{1,i}.tt_syn.Q_sim_re,75);
+    clusters_perc{1,i}.perc.q25th = prctile(clusters{1,i}.tt_syn.Q_sim_re,25);
+    clusters_perc{1,i}.perc.q75th = prctile(clusters{1,i}.tt_syn.Q_sim_re,75);
     init_date = date;
     init_year = yy;
-    [IHA_ind_syn] = IHA_indicators( clusters{1,i}.tt_syn.Q_sim_re, perc, init_date, init_year );
+    [IHA_ind_syn] = IHA_indicators( clusters{1,i}.tt_syn.Q_sim_re, clusters_perc{1,i}.perc, init_date, init_year );
     IHA_mc(i,:) = mean(IHA_ind_syn,2);
     rmdir(num2str(i));
     % ppm.increment();
@@ -73,6 +80,8 @@ Q_syn_med = prctile(Q_syn_mc,50,2);
 
 save('MC.mat');
 mkdir('MC');
+
+set(0,'defaultFigureVisible','on')
 
 f1 = figure('Name','Confidence interval ACF','NumberTitle','off');
 x = [0:100]';
