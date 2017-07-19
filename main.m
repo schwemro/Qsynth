@@ -7,7 +7,9 @@ tic
 l = 10;
 approach=1; % 1 = 'AR' or 2 = 'ARMA'
 opt_val = zeros(10,1);
-Qsyn = Qsynth(approach, '01-01-2011', '31-12-2030');
+Qsyn = Qsynth();
+Qsyn.selectapproach(approach);
+Qsyn.settimeperiod('01/01/2011', '31/12/2030', 'dd/MM/yyyy');
 Qsyn.folderres('pre');
 Qsyn.importts('input/inverliever_11_16.csv', 'dd/MM/yyyy', 'N/A');
 Qsyn.perennial();
@@ -21,15 +23,17 @@ close all;
 Q_max = max(Qsyn.tt_obs.Q)*1.1;
 clusters = {1,l}; % building clusters which are necessary for the parallelization
 for h = 1:l
-   clusters{1,h} = Qsynth(approach, '01-01-2011', '31-12-2030');
-   clusters{1,h}.folderres(num2str(h));
-   clusters{1,h}.tt_obs = Qsyn.tt_obs;
-   clusters{1,h}.Q_regime_daily = Qsyn.Q_regime_daily;
-   clusters{1,h}.Q_std_daily = Qsyn.Q_std_daily;
-   clusters{1,h}.N_obs = Qsyn.N_obs;
-   clusters{1,h}.p = Qsyn.p;
-   clusters{1,h}.q = Qsyn.q;
-   clusters{1,h}.EstMdl = Qsyn.EstMdl;
+    clusters{1,h} = Qsynth();
+    clusters{1,h}.selectapproach(approach);
+    clusters{1,h}.settimeperiod('01/01/2011', '31/12/2030', 'dd/MM/yyyy');
+    clusters{1,h}.folderres(num2str(h));
+    clusters{1,h}.tt_obs = Qsyn.tt_obs;
+    clusters{1,h}.Q_regime_daily = Qsyn.Q_regime_daily;
+    clusters{1,h}.Q_std_daily = Qsyn.Q_std_daily;
+    clusters{1,h}.N_obs = Qsyn.N_obs;
+    clusters{1,h}.p = Qsyn.p;
+    clusters{1,h}.q = Qsyn.q;
+    clusters{1,h}.EstMdl = Qsyn.EstMdl;
 end
 parpool('local'); % Parallelization of the loop
 % ppm = ParforProgMon('Progress', l, 1); % display progress, not working yet

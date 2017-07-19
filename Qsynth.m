@@ -33,12 +33,22 @@ classdef Qsynth < handle
     end
 
     methods
-        function obj = Qsynth(approach, start_date, end_date)
-            % Initializing object. Input arguments are approach which is
-            % applied as well as start and end date of synthetic runoff time series.
+        function obj = Qsynth()
+            % Initializing object.
+        end
+        
+        function selectapproach(obj, approach)
+            % Selecting the approach either AR or ARMA. Input arguments is 
+            % approach which is applied.
             obj.approach = approach;
-            obj.start_date = datetime(start_date,'InputFormat','dd-MM-yyyy');
-            obj.end_date = datetime(end_date,'InputFormat','dd-MM-yyyy');
+        end
+        
+        function settimeperiod(obj, start_date, end_date, dateformat_str)
+            % Indicate start and end date of synthetic streamflow time
+            % series. Input arguments are start and end date and the
+            % corresponding dateformat.
+            obj.start_date = datetime(start_date,'InputFormat',dateformat_str);
+            obj.end_date = datetime(end_date,'InputFormat',dateformat_str);
         end
 
         function importts(obj, filepath_str, dateformat_str, na_str)
