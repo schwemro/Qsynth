@@ -38,50 +38,21 @@ end
 parpool('local'); % Parallelization of the loop
 % ppm = ParforProgMon('Progress', l, 1); % display progress, not working yet
 parfor i = 1:numel(clusters)
-    Q_sim1 = clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
-    clusters{1,i}.tt_syn.Q_sim_re = Q_sim1;
-    Q_cp = clusters{1,i}.cutpeaks(Q_max,clusters{1,i}.EstMdl,clusters{1,i}.tt_syn);
-    clusters{1,i}.tt_syn.Q_sim_re = Q_cp;
+    clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
+    clusters{1,i}.cutpeaks(Q_max,clusters{1,i}.EstMdl,clusters{1,i}.tt_syn);
     clusters{1,i}.optMAwMWS();
     opt_val(i,1) = clusters{1,i}.opt_val;
-    Q_ma = clusters{1,i}.MAwMWS(Q_cp,clusters{1,i}.w,clusters{1,i}.Qx,'lin');
-    clusters{1,i}.tt_syn.Q_sim_re = Q_ma;
+    clusters{1,i}.MAwMWS(Q_cp,clusters{1,i}.w,clusters{1,i}.Qx,'lin');
     clusters{1,i}.testnorm();
     clusters{1,i}.testautocor();
     clusters{1,i}.ACFmonths();
     clusters{1,i}.compareIHA();
     clusters{1,i}.volume();
+    clusters{1,i}.plotts();
     clusters{1,i}.teststats();
     clusters{1,i}.teststatstotxt();
-    clusters{1,i}.Qtocsv(clusters{1,i}.tt_syn.Date, Q_ma, 'syn_fin');
+    clusters{1,i}.Qtocsv(clusters{1,i}.tt_syn.Date, clusters{1,i}.tt_syn.Q_sim_re, 'syn_fin');
 %     ppm.increment();
-
-    f1 = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
-    hold on
-    plot(clusters{1,i}.tt_obs.Date, clusters{1,i}.tt_obs.Q, 'b');
-    plot(clusters{1,i}.tt_syn.Date, Q_ma, 'r');
-    hold off
-    grid;
-    xlabel('Date');
-    ylabel('Q [m^3/s]');
-    xlim(datetime(clusters{1,i}.tt_obs.YYYY(1),[1 12],[1 31]));
-    xtickformat('dd-MMM-yyyy');
-    legend({'Q_{obs}','Q_{syn}'},'Box','off');
-    saveas(f1,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn_' num2str(clusters{1,i}.tt_obs.YYYY(1)) '.fig']);
-    saveas(f1,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn_' num2str(clusters{1,i}.tt_obs.YYYY(1)) '.pdf']);
-
-    f2 = figure('Name','Q_obs vs Q_syn','NumberTitle','off','defaultFigureVisible','off');
-    hold on
-    plot(clusters{1,i}.tt_obs.Date, clusters{1,i}.tt_obs.Q, 'b');
-    plot(clusters{1,i}.tt_syn.Date, Q_ma, 'r');
-    hold off
-    grid;
-    xlabel('Date');
-    ylabel('Q [m^3/s]');
-    xtickformat('dd-MMM-yyyy');
-    legend({'Q_{obs}','Q_{syn}'},'Box','off');
-    saveas(f2,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn.fig']);
-    saveas(f2,[clusters{1,i}.dir_results '/Q_obs_vs_Q_syn.pdf']);
     close all;
 end
 
