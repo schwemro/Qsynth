@@ -41,10 +41,10 @@ classdef Qsynth < handle
         function selectapproach(obj, approach)
             % Selecting the approach either AR or ARMA. Input arguments is
             % approach which is applied.
-            if nargin < 1
+            if nargin < 2
                 error('One input argument is necessary.')
             end
-            if nargin > 1
+            if nargin > 2
                 error('Too many input arguments. Only one input argument is necessary.')
             end
             obj.approach = approach;
@@ -54,10 +54,10 @@ classdef Qsynth < handle
             % Indicate start and end date of synthetic streamflow time
             % series. Input arguments are start and end date and the
             % corresponding dateformat.
-            if nargin < 3
+            if nargin < 4
                 error('Three input arguments are necessary.')
             end
-            if nargin > 3
+            if nargin > 4
                 error('Too many input arguments. Only three input argument are necessary.')
             end
             obj.start_date = datetime(start_date,'InputFormat',dateformat_str);
@@ -67,10 +67,10 @@ classdef Qsynth < handle
         function importts(obj, filepath_str, dateformat_str, na_str)
             % Import runoff time series. Input arguments are path to
             % .csv-file, format of date column and string which marks NaN.
-            if nargin < 3
+            if nargin < 4
                 error('Three input arguments are necessary.')
             end
-            if nargin > 3
+            if nargin > 4
                 error('Too many input arguments. Only three input argument are necessary.')
             end
             T = readtable(filepath_str,'TreatAsEmpty',na_str);
@@ -96,7 +96,7 @@ classdef Qsynth < handle
 
         function perennial(obj)
            % Testing if river is perennial. Otherwise rasing ERROR!
-           if nargin >= 1
+           if nargin >= 2
              error('Too many input arguments. No input argument is necessary.')
            end
            if any(obj.tt_obs.Q==0)
@@ -110,10 +110,10 @@ classdef Qsynth < handle
             % length of the gap as number of samples in the estimation.
             % Input argument is time series. Output argument is time series
             % without gaps.
-            if nargin < 1
+            if nargin < 2
                 error('One input argument is necessary.')
             end
-            if nargin > 1
+            if nargin > 2
                 error('Too many input arguments. Only one input argument is necessary.')
             end
             Q_NA = double(isnan(Q));
@@ -171,10 +171,10 @@ classdef Qsynth < handle
         function Q_log = logtransform(~, Q)
             % Logarithmic transformation of runoff time series. Input argument
             % is time series. Output argument is log transformed time series.
-            if nargin < 1
+            if nargin < 2
                 error('One input argument is necessary.')
             end
-            if nargin > 1
+            if nargin > 2
                 error('Too many input arguments. Only one input argument is necessary.')
             end
             Q_log = log(Q);
@@ -184,7 +184,7 @@ classdef Qsynth < handle
             % Testing visually for prevailing seasonality by plotting the
             % daily and mothly runoff regime and the parde coefficient.
             % TODO: runoff regime and std regime as output args.
-            if nargin >= 1
+            if nargin >= 2
               error('Too many input arguments. No input argument is necessary.')
             end
             Q_mean = nanmean(obj.tt_obs.Q);
@@ -216,6 +216,9 @@ classdef Qsynth < handle
             f2 = figure('Name','Parde Coefficient','NumberTitle','off');
             plot(Q_regime_monthly.MM, Q_regime_monthly.parde, '-bo');
             grid;
+            hline = refline([0 1]);
+            hline.Color = 'blue';
+            hline.LineStyle = '-.';
             xlim([1 12]);
             ylim_up = ceil(max(Q_regime_monthly.parde));
             ylim([0,ylim_up]);
@@ -246,10 +249,10 @@ classdef Qsynth < handle
             % and the daily standard deviation regime.
             % TODO: Adjust transfer of input args and the use inside the
             % function.
-            if nargin < 2
+            if nargin < 3
                 error('Two input arguments are necessary.')
             end
-            if nargin > 2
+            if nargin > 3
                 error('Too many input arguments. Only two input arguments are necessary.')
             end
             obj.tt_obs.Q_rm_mean = zeros(obj.N_obs,1);
@@ -274,7 +277,7 @@ classdef Qsynth < handle
         function determineorder(obj)
             % Determine model order by using the autocorrelation
             % and the partial autocorrelation function.
-            if nargin >= 1
+            if nargin >= 2
               error('Too many input arguments. No input argument is necessary.')
             end
             acf = autocorr(obj.tt_obs.Q_trans_stand_d, obj.N_obs-1);
@@ -315,10 +318,10 @@ classdef Qsynth < handle
             % Initialize object of time series model and estimate the according
             % model paramters. Input argument is the log-transformed and standardized streamflow time
             % series.
-            if nargin < 1
+            if nargin < 2
                 error('One input argument is necessary.')
             end
-            if nargin > 1
+            if nargin > 2
                 error('Too many input arguments. Only one input argument is necessary.')
             end
             Mdl = arima(obj.p,0,obj.q);
@@ -332,10 +335,10 @@ classdef Qsynth < handle
             % Generating articial streamflow time series. Readding the trend as well as undoing the
             % standardization and logarithmic transformation. Input arguments are the estimated model,
             % daily runoff regime and the daily standard deviation regime.
-            if nargin < 3
+            if nargin < 4
                 error('Three input arguments are necessary.')
             end
-            if nargin > 3
+            if nargin > 4
                 error('Too many input arguments. Only three input argument are necessary.')
             end
             Date = [obj.start_date:obj.end_date]';
@@ -362,10 +365,10 @@ classdef Qsynth < handle
             % Regenerating articial streamflow time series. Input arguments are
             % the estimated model and the timetable of the synthetic time series.
             % Output argument is the simulated streamflow time series.
-            if nargin < 2
+            if nargin < 3
                 error('Two input arguments are necessary.')
             end
-            if nargin > 2
+            if nargin > 3
                 error('Too many input arguments. Only two input arguments are necessary.')
             end
             [tt_sim.Q_sim,tt_sim.E] = simulate(EstMdl,size(tt_sim,1));
@@ -378,10 +381,10 @@ classdef Qsynth < handle
             % time series with model. Starts at 5 day backward shift. Input arguments
             % are the threshold above which the peaks will be cutted, the estimated model
             % and the timetable of the synthetic time series.
-            if nargin < 3
+            if nargin < 4
                 error('Three input arguments are necessary.')
             end
-            if nargin > 3
+            if nargin > 4
                 error('Too many input arguments. Only three input argument are necessary.')
             end
             if any(obj.tt_syn.Q_sim_re>Q_max)
@@ -414,7 +417,7 @@ classdef Qsynth < handle
         function optMAwMWS(obj)
             % Find optimal window size and upper threshold of Q where to start
             % applying a moving average with moving window size.
-            if nargin >= 1
+            if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
             Q_obs = obj.tt_obs.Q;
@@ -470,10 +473,10 @@ classdef Qsynth < handle
             % size. Input arguments are time series, the starting window size,
             % streamflow percentile as far as the filtering is applied and
             % method used for spacing.
-            if nargin < 4
+            if nargin < 5
                 error('Four input arguments are necessary.')
             end
-            if nargin > 4
+            if nargin > 5
                 error('Too many input arguments. Only four input argument are necessary.')
             end
             t = table();
@@ -576,7 +579,7 @@ classdef Qsynth < handle
 
         function testnorm(obj)
             % Testing visually for normal distribution by using histograms.
-            if nargin >= 1
+            if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
             xlims_nn = zeros(2,2);
@@ -693,7 +696,7 @@ classdef Qsynth < handle
             % Testing visually for correlation in the Residuals and comapring
             % the ACF of the observed and the synthetic streamflow and
             % the PACF respectively.
-            if nargin >= 1
+            if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
             Q_obs = obj.tt_obs.Q;
@@ -751,7 +754,7 @@ classdef Qsynth < handle
             % Splitting the runoff time series into single months,
             % calculate the ACF and compare between observed and synthetic
             % streamflow.
-            if nargin >= 1
+            if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
             obj.tt_obs.Q_sim_re = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
@@ -777,7 +780,7 @@ classdef Qsynth < handle
         function compareIHA(obj)
             % Compare the IHA indicators (Richter et al. 1996) for the
             % observed and synthetic streamflow except Group 3.
-            if nargin >= 1
+            if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
             Q_obs = obj.tt_obs.Q;
@@ -873,7 +876,7 @@ classdef Qsynth < handle
            % Plotting the cumulated volumes of observed and synthetic streamflow
            % at a monthly and a yearly scale and the total volumes
            % for each month.
-           if nargin >= 1
+           if nargin >= 2
               error('Too many input arguments. No input argument is necessary.')
            end
            Q_obs = obj.tt_obs.Q;
@@ -932,7 +935,7 @@ classdef Qsynth < handle
 
         function plotts(obj)
            % Plotting the generated time series.
-           if nargin >= 1
+           if nargin >= 2
               error('Too many input arguments. No input argument is necessary.')
            end
            f1 = figure('Name','Q_obs vs Q_syn (first year)','NumberTitle','off','defaultFigureVisible','off');
@@ -977,7 +980,7 @@ classdef Qsynth < handle
             % Calculate test staistsic containing mean, standard deviation,
             % skewness coeeficient, minimum and maximum of the observed and
             % the synthetic streamflow respectively.
-            if nargin >= 1
+            if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
             obj.test_stats = zeros(5,2);
@@ -1007,7 +1010,7 @@ classdef Qsynth < handle
 
         function teststatstotxt(obj)
             % Export test statistic to .txt..
-            if nargin >= 1
+            if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
             B = array2table(obj.test_stats);
@@ -1019,10 +1022,10 @@ classdef Qsynth < handle
         function Qtocsv(obj, Date, Q, fn)
             % Export streamflow time series to .csv.. Input arguments
             % are Date, streamflow and suffix of file name.
-            if nargin < 3
+            if nargin < 4
                 error('Three input arguments are necessary.')
             end
-            if nargin > 3
+            if nargin > 4
                 error('Too many input arguments. Only three input argument are necessary.')
             end
             tt_res = timetable(Date,Q);
