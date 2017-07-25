@@ -2,6 +2,7 @@ classdef Qsynth < handle
     % Qsynth Implementing an approach to generate artificial daily streamflow
     % time series according to Salas (1993)
     %
+    % Build for command line usage
     % Requires: MY_XTICKLABELS
     % MATLAB R2017a,
     % (c) Copyright 2017, Robin Schwemmle <rschwemmle@yahoo.de>
@@ -104,12 +105,11 @@ classdef Qsynth < handle
            end
         end
 
-        function Q_ts_filled = fillgaps(~, Q)
+        function fillgaps(~, Q)
             % Testing if time series exhibits gaps. If there are any gaps,
             % they are filled by using autoregressive modeling using half the
             % length of the gap as number of samples in the estimation.
-            % Input argument is time series. Output argument is time series
-            % without gaps.
+            % Input argument is time series.
             if nargin < 2
                 error('One input argument is necessary.')
             end
@@ -152,7 +152,7 @@ classdef Qsynth < handle
                     end
                 end
                 Q(Q<0) = Q_min;
-                Q_ts_filled = Q;
+                obj.tt_obs.Q = Q;
             end
         end
 
@@ -468,11 +468,12 @@ classdef Qsynth < handle
             obj.Qx = x2(I_col);
         end
 
-        function MAwMWS(obj, Q, N_ws, prc, method)
+        function Q = MAwMWS(obj, Q, N_ws, prc, method)
             % Filtering time series by moving average with moving window
             % size. Input arguments are time series, the starting window size,
             % streamflow percentile as far as the filtering is applied and
-            % method used for spacing.
+            % method used for spacing. Output argument is a filtered time
+            % series.
             if nargin < 5
                 error('Four input arguments are necessary.')
             end
@@ -564,7 +565,7 @@ classdef Qsynth < handle
                 t.Q_sim_dma(t.ws==7) = t.ma_7(t.ws==7);
                 t.Q_sim_dma(t.ws==9) = t.ma_9(t.ws==9);
             end
-            obj.tt_syn.Q_sim_re=t.Q_sim_dma;
+            Q = t.Q_sim_dma;
 
             ws(end,1) = ws(end,1)+2;
             ws(end,2) = max(obj.tt_syn.Q_sim_re);
@@ -690,6 +691,14 @@ classdef Qsynth < handle
             ylabel('Probability','visible','on');
             %             saveas(f1,[obj.dir_results '/Histograms.pdf'])
             saveas(f2,[obj.dir_results '/Hist_obs_vs_syn.fig'])
+
+            f3 = figure('Name','Histogram of Residuals','NumberTitle', 'off');
+            histogram(obj.tt_syn.E,'FaceColor','k','Normalization','probability');
+            grid; title('Distribution of \epsilon');
+            xlabel('Q [m^3/s]');
+            ylabel('Probability');
+%             saveas(f2,[obj.dir_results '/Histogram_of_Residuals.pdf']);
+            saveas(f3,[obj.dir_results '/Histogram_of_Residuals.fig']);
         end
 
         function testautocor(obj)
@@ -699,9 +708,6 @@ classdef Qsynth < handle
             if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
-            Q_obs = obj.tt_obs.Q;
-            Q_syn = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
-
             f1 = figure('Name','ACF of Residuals','NumberTitle','off');
             autocorr(obj.tt_syn.E, 100);
             xlim([0 100]);
@@ -711,43 +717,37 @@ classdef Qsynth < handle
 %             saveas(f1,[obj.dir_results '/ACF_of_Residuals.pdf']);
             saveas(f1,[obj.dir_results '/ACF_of_Residuals.fig']);
 
-            f2 = figure('Name','Histogram of Residuals','NumberTitle', 'off');
-            histogram(obj.tt_syn.E,'FaceColor','k');
-            grid; title('Distribution of \epsilon');
-%             saveas(f2,[obj.dir_results '/Histogram_of_Residuals.pdf']);
-            saveas(f2,[obj.dir_results '/Histogram_of_Residuals.fig']);
-
-            f3 = figure('Name','ACF of Obs & Syn','NumberTitle','off');
+            f2 = figure('Name','ACF of Obs & Syn','NumberTitle','off');
             subplot(2,1,1);
-            autocorr(Q_obs, 100);
+            autocorr(obj.tt_obs.Q, 100);
             title('Observed');
             xlim([0 100]);
             xlabel('Lag [Days]');
             ylabel('ACF');
             subplot(2,1,2);
-            autocorr(Q_syn, 100);
+            autocorr(obj.tt_syn.Q_sim_re, 100);
             title(obj.approach_str{obj.approach});
             xlim([0 100]);
             xlabel('Lag [Days]');
             ylabel('ACF');
 %             saveas(f3,[obj.dir_results '/ACF_of_AR_and_Obs.pdf']);
-            saveas(f3,[obj.dir_results '/ACF_of_Obs_and_Syn.fig']);
+            saveas(f2,[obj.dir_results '/ACF_of_Obs_and_Syn.fig']);
 
-            f4 = figure('Name','PACF of Obs & Syn','NumberTitle','off');
+            f3 = figure('Name','PACF of Obs & Syn','NumberTitle','off');
             subplot(2,1,1);
-            parcorr(Q_obs, 20);
+            parcorr(obj.tt_obs.Q, 20);
             xlim([0 20]);
             title('Observed');
             xlabel('Lag [Days]');
             ylabel('PACF');
             subplot(2,1,2);
-            parcorr(Q_syn, 20);
+            parcorr(obj.tt_syn.Q_sim_re, 20);
             xlim([0 20]);
             title(obj.approach_str{obj.approach});
             xlabel('Lag [Days]');
             ylabel('PACF');
 %             saveas(f4,[obj.dir_results '/PACF_Sim_vs_Obs.pdf']);
-            saveas(f4,[obj.dir_results '/PACF_Obs_vs_Syn.fig']);
+            saveas(f3,[obj.dir_results '/PACF_Obs_vs_Syn.fig']);
         end
 
         function ACFmonths(obj)
@@ -757,7 +757,6 @@ classdef Qsynth < handle
             if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
-            obj.tt_obs.Q_sim_re = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
             for i = 1:12
                 f = figure('Name',['ACF of Obs & Syn ' num2str(i)],'NumberTitle','off','defaultFigureVisible','off');
                 subplot(2,1,1);
@@ -767,7 +766,7 @@ classdef Qsynth < handle
                 xlabel('Lag [Days]');
                 ylabel('ACF');
                 subplot(2,1,2);
-                autocorr(obj.tt_obs.Q_sim_re(obj.tt_obs.MM==i), 100);
+                autocorr(obj.tt_syn.Q_sim_re(obj.tt_syn.MM==i), 100);
                 title(obj.approach_str{obj.approach});
                 xlim([0 100]);
                 xlabel('Lag [Days]');
@@ -783,28 +782,26 @@ classdef Qsynth < handle
             if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
-            Q_obs = obj.tt_obs.Q;
-            Q_syn = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
 
             year = obj.tt_obs.YYYY(1);
             date =[ 01 01 year ];
 
-            perc.q25th=prctile(Q_obs,25);
-            perc.q75th=prctile(Q_obs,75);
+            perc.q25th=prctile(obj.tt_obs.Q,25);
+            perc.q75th=prctile(obj.tt_obs.Q,75);
 
             init_date=date;
             init_year=year;
 
-            [IHA_ind_obs]= IHA_indicators( Q_obs, perc, init_date, init_year );
+            [IHA_ind_obs]= IHA_indicators(obj.tt_obs.Q, perc, init_date, init_year);
             IHA_ind_obs_mean=mean(IHA_ind_obs,2);
 
-            perc.q25th=prctile(Q_syn,25);
-            perc.q75th=prctile(Q_syn,75);
+            perc.q25th=prctile(obj.tt_syn.Q_sim_re,25);
+            perc.q75th=prctile(obj.tt_syn.Q_sim_re,75);
 
             init_date=date;
             init_year=year;
 
-            [IHA_ind_syn]= IHA_indicators( Q_syn, perc, init_date, init_year );
+            [IHA_ind_syn]= IHA_indicators(obj.tt_syn.Q_sim_re, perc, init_date, init_year);
             IHA_ind_syn_mean=mean(IHA_ind_syn,2);
 
             f1 = figure('Name','IHA - Group 1','NumberTitle','off');
@@ -882,25 +879,25 @@ classdef Qsynth < handle
            Q_obs = obj.tt_obs.Q;
            Q_syn = obj.tt_syn.Q_sim_re(obj.tt_syn.Date(1):obj.tt_syn.Date(obj.N_obs));
 
-           TT = timetable(obj.tt_obs.Date,Q_obs, Q_syn);
-           TT.Properties.VariableNames = {'Q_obs' 'Q_syn'};
-           TT.vol_obs = (TT.Q_obs.*86400)./10^9;
-           TT.vol_syn = (TT.Q_syn.*86400)./10^9;
+           tt_vol = timetable(obj.tt_obs.Date,Q_obs, Q_syn);
+           tt_vol.Properties.VariableNames = {'Q_obs' 'Q_syn'};
+           tt_vol.vol_obs = (tt_vol.Q_obs.*86400)./10^9;
+           tt_vol.vol_syn = (tt_vol.Q_syn.*86400)./10^9;
 
-           TT_mm = retime(TT, 'monthly', 'sum');
-           TT_mm.vol_obs_cum = cumsum(TT_mm.vol_obs);
-           TT_mm.vol_syn_cum = cumsum(TT_mm.vol_syn);
-           TT_mm.MM = month(TT_mm.Time);
+           tt_vol_mm = retime(tt_vol, 'monthly', 'sum');
+           tt_vol_mm.vol_obs_cum = cumsum(tt_vol_mm.vol_obs);
+           tt_vol_mm.vol_syn_cum = cumsum(tt_vol_mm.vol_syn);
+           tt_vol_mm.MM = month(tt_vol_mm.Time);
            func = @sum;
-           TT_mm_sum = varfun(func,TT_mm,'GroupingVariables','MM');
-           TT_yy = retime(TT, 'yearly', 'sum');
-           TT_yy.vol_obs_cum = cumsum(TT_yy.vol_obs);
-           TT_yy.vol_syn_cum = cumsum(TT_yy.vol_syn);
+           tt_vol_mm_sum = varfun(func,tt_vol_mm,'GroupingVariables','MM');
+           tt_vol_yy = retime(tt_vol, 'yearly', 'sum');
+           tt_vol_yy.vol_obs_cum = cumsum(tt_vol_yy.vol_obs);
+           tt_vol_yy.vol_syn_cum = cumsum(tt_vol_yy.vol_syn);
 
            f1 = figure('Name','Cumulated Volume (monthly)','NumberTitle','off');
            hold on
-           plot(TT_mm.Time, TT_mm.vol_obs_cum, 'b');
-           plot(TT_mm.Time, TT_mm.vol_syn_cum, 'r');
+           plot(tt_vol_mm.Time, tt_vol_mm.vol_obs_cum, 'b');
+           plot(tt_vol_mm.Time, tt_vol_mm.vol_syn_cum, 'r');
            hold off
            grid;
            xlabel('Date');
@@ -911,8 +908,8 @@ classdef Qsynth < handle
 
            f2 = figure('Name','Cumulated Volume (yearly)','NumberTitle','off');
            hold on
-           plot(TT_yy.Time, TT_yy.vol_obs_cum, 'b');
-           plot(TT_yy.Time, TT_yy.vol_syn_cum, 'r');
+           plot(tt_vol_yy.Time, tt_vol_yy.vol_obs_cum, 'b');
+           plot(tt_vol_yy.Time, tt_vol_yy.vol_syn_cum, 'r');
            hold off
            grid;
            xlabel('Date');
@@ -923,7 +920,7 @@ classdef Qsynth < handle
 
            f3 = figure('Name','Total Volume (monthly)','NumberTitle','off');
            hold on
-           b = bar([TT_mm_sum.sum_vol_obs TT_mm_sum.sum_vol_syn]);
+           b = bar([tt_vol_mm_sum.sum_vol_obs tt_vol_mm_sum.sum_vol_syn]);
            b(1).FaceColor = 'b';
            b(2).FaceColor = 'r';
            legend({'Q_{obs}','Q_{syn}'},'Box','off')
@@ -941,7 +938,7 @@ classdef Qsynth < handle
            f1 = figure('Name','Q_obs vs Q_syn (first year)','NumberTitle','off','defaultFigureVisible','off');
            hold on
            plot(obj.tt_obs.Date, obj.tt_obs.Q, 'b');
-           plot(obj.tt_syn.Date, Q_ma, 'r');
+           plot(obj.tt_syn.Date, obj.tt_syn.Q_sim_re, 'r');
            hold off
            grid;
            xlabel('Date');
@@ -954,7 +951,7 @@ classdef Qsynth < handle
            f2 = figure('Name','Q_obs vs Q_syn (entire)','NumberTitle','off','defaultFigureVisible','off');
            hold on
            plot(obj.tt_obs.Date, obj.tt_obs.Q, 'b');
-           plot(obj.tt_syn.Date, Q_ma, 'r');
+           plot(obj.tt_syn.Date, obj.tt_syn.Q_sim_re, 'r');
            hold off
            grid;
            xlabel('Date');
@@ -964,9 +961,7 @@ classdef Qsynth < handle
            saveas(f2,[obj.dir_results '/Q_obs_vs_Q_syn.fig']);
 
            f3 = figure('Name','Q_syn (entire)','NumberTitle','off','defaultFigureVisible','off');
-           hold on
-           plot(obj.tt_syn.Date, Q_ma, 'r');
-           hold off
+           plot(obj.tt_syn.Date, obj.tt_syn.Q_sim_re, 'r');
            grid;
            xlabel('Date');
            ylabel('Q [m^3/s]');
@@ -984,16 +979,16 @@ classdef Qsynth < handle
                error('Too many input arguments. No input argument is necessary.')
             end
             obj.test_stats = zeros(5,2);
-            obj.test_stats(1,1) = mean(obj.tt_obs.Q);
-            obj.test_stats(1,2) = mean(obj.tt_syn.Q_sim_re);
-            obj.test_stats(2,1) = std(obj.tt_obs.Q);
-            obj.test_stats(2,2) = std(obj.tt_syn.Q_sim_re);
-            obj.test_stats(3,1) = skewness(obj.tt_obs.Q);
-            obj.test_stats(3,2) = skewness(obj.tt_syn.Q_sim_re);
-            obj.test_stats(4,1) = min(obj.tt_obs.Q);
-            obj.test_stats(4,2) = min(obj.tt_syn.Q_sim_re);
-            obj.test_stats(5,1) = max(obj.tt_obs.Q);
-            obj.test_stats(5,2) = max(obj.tt_syn.Q_sim_re);
+            obj.test_stats(1,1) = min(obj.tt_obs.Q);
+            obj.test_stats(1,2) = min(obj.tt_syn.Q_sim_re);
+            obj.test_stats(2,1) = max(obj.tt_obs.Q);
+            obj.test_stats(2,2) = max(obj.tt_syn.Q_sim_re);
+            obj.test_stats(3,1) = mean(obj.tt_obs.Q);
+            obj.test_stats(3,2) = mean(obj.tt_syn.Q_sim_re);
+            obj.test_stats(4,1) = std(obj.tt_obs.Q);
+            obj.test_stats(4,2) = std(obj.tt_syn.Q_sim_re);
+            obj.test_stats(5,1) = skewness(obj.tt_obs.Q);
+            obj.test_stats(5,2) = skewness(obj.tt_syn.Q_sim_re);
 
             f1 = figure('Name','Test statistic','NumberTitle','off');
             b = bar([obj.test_stats(:,1) obj.test_stats(:,2)]);
@@ -1003,7 +998,7 @@ classdef Qsynth < handle
             legend({'Q_{obs}','Q_{syn}'},'Box','off','Location','northwest')
             ylabel('Q [m^3/s]');
             xticks([1 2 3 4 5])
-            xticklabels({'Mean', 'Std', 'Skew', 'Min', 'Max'})
+            xticklabels({'Min', 'Max',' Mean', 'Std', 'Skew'})
             saveas(f1, [obj.dir_results '/test_stats.fig']);
             saveas(f1, [obj.dir_results '/test_stats.pdf']);
         end
