@@ -40,13 +40,17 @@ parfor i = 1:l
     clusters{1,i}.generaterunoff(clusters{1,i}.EstMdl,clusters{1,i}.Q_regime_daily, clusters{1,i}.Q_std_daily);
     clusters{1,i}.cutpeaks(Q_max,clusters{1,i}.EstMdl,clusters{1,i}.tt_syn);
     clusters{1,i}.optMAwMWS();
+    clusters{1,i}.tt_syn = clusters{1,i}.tt_syn; % parallelization is not returning
+    clusters{1,i}.N_sim = clusters{1,i}.N_sim; % the class properties automatically.
+    clusters{1,i}.w = clusters{1,i}.w; % Very unhandy!
+    clusters{1,i}.Qx = clusters{1,i}.Qx;
+    clusters{1,i}.mws = clusters{1,i}.mws;
+    opt_val(i,1) = clusters{1,i}.opt_val;
     opt_val(i,1) = clusters{1,i}.opt_val;
     hbar.iterate(1);
 end
 
 close(hbar)
-p = gcp;
-delete(p)
 
 [val, idx] = min(opt_val);
 clusters{1,idx}.dir_results = 'inverliever';
@@ -65,3 +69,5 @@ dlmwrite('opt_val.txt',opt_val,'delimiter','\t','precision',3);
 t = round(toc/60,1);
 disp(['Total runtime: ' num2str(t) ' min'])
 % save('inverliever_AR.mat');
+p = gcp;
+delete(p)

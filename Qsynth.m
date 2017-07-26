@@ -567,12 +567,13 @@ classdef Qsynth < handle
             end
             Q = t.Q_sim_dma;
 
-            ws(end,1) = ws(end,1)+2;
-            ws(end,2) = max(obj.tt_syn.Q_sim_re);
+            mws_1 = [0;ws(1,2)+2]';
+            mws_2 = [max(obj.tt_syn.Q_sim_re);0]';
+            mws = [mws_1;ws;mws_2];
             f1 = figure('Name','Moving average with moving window size','NumberTitle','off');
-            stairs(ws(:,1), ws(:,2), 'k');
+            stairs(mws(:,1), mws(:,2), 'k');
             grid;
-            yticks(ws(:,1));
+            yticks(flipud(mws(:,2)));
             xlabel('Q [m^3/s]');
             ylabel('Window size [Days]');
             saveas(f1,[obj.dir_results '/MAwMWS.fig'])
@@ -829,7 +830,7 @@ classdef Qsynth < handle
                 {'Min'; '90-day'} {'Max'; '1-day'}...
                 {'Max'; '3-day'} {'Max'; '7-day'}...
                 {'Max'; '30-day'} {'Max'; '90-day'}};
-            ht = my_xticklabels(gca, xp, xt);
+            my_xticklabels(xp, xt);
             saveas(f2,[obj.dir_results '/IHA_group_2.fig']);
 
             f3 = figure('Name','IHA - Group 4','NumberTitle','off');
@@ -841,7 +842,7 @@ classdef Qsynth < handle
             legend({'Q_{obs}','Q_{syn}'},'Box','off')
             xp = 1:1:4;
             xt = {{'No. of low pulses'} {'No. of high pulses'} {'Mean duration'; 'of low pulses'} {'Mean duration'; 'of high pulses'}};
-            ht = my_xticklabels(gca, xp, xt);
+            my_xticklabels(xp, xt);
             saveas(f3,[obj.dir_results '/IHA_group_4.fig']);
 
             f4 = figure('Name','IHA - Group 5-1','NumberTitle','off');
@@ -854,7 +855,7 @@ classdef Qsynth < handle
             xp = [1 2];
             xt = {{'Means of all negative'; 'differences between'; 'consecutive daily values'} ...
                 {'Means of all postive'; 'differences between'; 'consecutive daily means'}};
-            ht = my_xticklabels(gca, xp, xt);
+            my_xticklabels(xp, xt);
             saveas(f4,[obj.dir_results '/IHA_group_5_1.fig']);
 
             f5 = figure('Name','IHA - Group 5-2','NumberTitle','off');
