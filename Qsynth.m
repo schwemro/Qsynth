@@ -91,7 +91,6 @@ classdef Qsynth < handle
             grid;
             xlabel('Date');
             ylabel('Q [m^3/s]');
-%             saveas(f1,[obj.dir_results '/Daily_Runoff.pdf']);
             saveas(f1,[obj.dir_results '/Daily_Runoff.fig']);
         end
 
@@ -210,7 +209,6 @@ classdef Qsynth < handle
             ylim([0,ylim_up]);
             xlabel('Month');
             ylabel('Q [m^3/s]');
-%             saveas(f1,[obj.dir_results '/Runoff_Regime_monthly.pdf']);
             saveas(f1,[obj.dir_results '/Runoff_Regime_monthly.fig']);
 
             f2 = figure('Name','Parde Coefficient','NumberTitle','off');
@@ -224,7 +222,6 @@ classdef Qsynth < handle
             ylim([0,ylim_up]);
             xlabel('Month');
             ylabel('[-]');
-%             saveas(f2,[obj.dir_results '/Parde_coefficient.pdf']);
             saveas(f2,[obj.dir_results '/Parde_coefficient.fig']);
 
             f3 = figure('Name','Runoff Regime (daily)','NumberTitle','off');
@@ -239,7 +236,6 @@ classdef Qsynth < handle
             ylim([0,ylim_up]);
             xlabel('Day of Year');
             ylabel('Q [m^3/s]');
-%             saveas(f3,[obj.dir_results '/Runoff_Regime_daily.pdf']);
             saveas(f3,[obj.dir_results '/Runoff_Regime_daily.fig']);
         end
 
@@ -270,7 +266,6 @@ classdef Qsynth < handle
             grid;
             xlabel('Date');
             ylabel('Q [m^3/s]');
-%             saveas(f1,[obj.dir_results '/Standardized_Daily_Runoff.pdf']);
             saveas(f1,[obj.dir_results '/Standardized_Daily_Runoff.fig']);
         end
 
@@ -280,12 +275,12 @@ classdef Qsynth < handle
             if nargin >= 2
               error('Too many input arguments. No input argument is necessary.')
             end
-            acf = autocorr(obj.tt_obs.Q_trans_stand_d, obj.N_obs-1);
-            bounds_acf = [0.4;-0.4];
-            l = find(acf<bounds_acf(1)&acf>bounds_acf(2));
             if (obj.approach == 1)
                 obj.q = 0;
             elseif (obj.approach == 2)
+                acf = autocorr(obj.tt_obs.Q_trans_stand_d, obj.N_obs-1);
+                bounds_acf = [0.4;-0.4];
+                l = find(acf<bounds_acf(1)&acf>bounds_acf(2));
                 obj.q = l(1) - 1;
             end
 
@@ -310,7 +305,6 @@ classdef Qsynth < handle
             title('');
             xlabel('Lag [Days]');
             ylabel('PACF');
-%             saveas(f1,[obj.dir_results '/ACF_and_PACF.pdf']);
             saveas(f1,[obj.dir_results '/ACF_and_PACF.fig']);
         end
 
@@ -670,7 +664,6 @@ classdef Qsynth < handle
             xlim([x1_nn x2_nn]);
             ylim([0 y2_nn]);
             xlabel('Q [m^3/s]');
-%             saveas(f1,[obj.dir_results '/Histograms.pdf'])
             saveas(f1,[obj.dir_results '/Histograms.fig'])
 
             f2 = figure('Name','Histograms','NumberTitle','off');
@@ -698,7 +691,6 @@ classdef Qsynth < handle
             grid; title('Distribution of \epsilon');
             xlabel('Q [m^3/s]');
             ylabel('Probability');
-%             saveas(f2,[obj.dir_results '/Histogram_of_Residuals.pdf']);
             saveas(f3,[obj.dir_results '/Histogram_of_Residuals.fig']);
         end
 
@@ -715,7 +707,6 @@ classdef Qsynth < handle
             title('');
             xlabel('Lag [Days]');
             ylabel('ACF');
-%             saveas(f1,[obj.dir_results '/ACF_of_Residuals.pdf']);
             saveas(f1,[obj.dir_results '/ACF_of_Residuals.fig']);
 
             f2 = figure('Name','ACF of Obs & Syn','NumberTitle','off');
@@ -731,7 +722,6 @@ classdef Qsynth < handle
             xlim([0 100]);
             xlabel('Lag [Days]');
             ylabel('ACF');
-%             saveas(f3,[obj.dir_results '/ACF_of_AR_and_Obs.pdf']);
             saveas(f2,[obj.dir_results '/ACF_of_Obs_and_Syn.fig']);
 
             f3 = figure('Name','PACF of Obs & Syn','NumberTitle','off');
@@ -747,7 +737,6 @@ classdef Qsynth < handle
             title(obj.approach_str{obj.approach});
             xlabel('Lag [Days]');
             ylabel('PACF');
-%             saveas(f4,[obj.dir_results '/PACF_Sim_vs_Obs.pdf']);
             saveas(f3,[obj.dir_results '/PACF_Obs_vs_Syn.fig']);
         end
 
@@ -772,7 +761,6 @@ classdef Qsynth < handle
                 xlim([0 100]);
                 xlabel('Lag [Days]');
                 ylabel('ACF');
-                %             saveas(f,[obj.dir_results '/ACF_of_Obs_and_Syn_' num2str(i) '.pdf']);
                 saveas(f,[obj.dir_results '/ACF_of_Obs_and_Syn_' num2str(i) '.fig']);
             end
         end
@@ -1001,7 +989,6 @@ classdef Qsynth < handle
             xticks([1 2 3 4 5])
             xticklabels({'Min', 'Max',' Mean', 'Std', 'Skew'})
             saveas(f1, [obj.dir_results '/test_stats.fig']);
-            saveas(f1, [obj.dir_results '/test_stats.pdf']);
         end
 
         function teststatstotxt(obj)
