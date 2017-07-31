@@ -29,9 +29,44 @@ Directions for Use
 
 > `Daily Streamflow`: Displays observed streamflow time series
 
-> `Seasonality`: 
+> `Seasonality`: Daily and monthly runoff regime as well as parde coefficient are illustrated
+
+---
+
+>**Time Period**
+
+>`Start Date`:
+
+>`End Date`:
+
+---
+
+>**Generate Streamflow**
+
+>`Run`:
+
+---
 
 
+>**Output**
+
+>`Synthetic Streamflow`:
+
+>`Filter`:
+
+>`Autocorrelation`:
+
+> `Histogram`:
+
+> `IHA`:
+
+> `Simple Test Statistic`:
+
+> `Volume`:
+
+> `Export`:
+
+---
 
 ```flow
 sub1=>subroutine: Input
