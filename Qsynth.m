@@ -182,7 +182,6 @@ classdef Qsynth < handle
         function testseas(obj)
             % Testing visually for prevailing seasonality by plotting the
             % daily and mothly runoff regime and the parde coefficient.
-            % TODO: runoff regime and std regime as output args.
             if nargin >= 2
               error('Too many input arguments. No input argument is necessary.')
             end
@@ -243,8 +242,6 @@ classdef Qsynth < handle
             % Removing trends and shifts of the runoff time series by
             % daily standardization. Input argument are daily runoff regime
             % and the daily standard deviation regime.
-            % TODO: Adjust transfer of input args and the use inside the
-            % function.
             if nargin < 3
                 error('Two input arguments are necessary.')
             end
