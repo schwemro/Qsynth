@@ -1,6 +1,6 @@
 # ![](images/icon_48x48.png "Icon") Streamflow Generator (Qsynth)
 
-**Streamflow generator** synthesises an artificial streamflow time series with daily values based on an autoregressive model. The generation merely based on an observed streamflow time series. The implemented approach takes roughly a bearing described in Salas (1993)[^1]
+**Streamflow generator** synthesises an artificial streamflow time series with daily values based on autoregressive modeling. The generation merely based on an observed streamflow time series. The implemented approach takes roughly a bearing described in Salas (1993)[^1]
 
 ## License
 
@@ -63,7 +63,7 @@ This software can be distributed freely under the GPL v2 license. Please read th
 
 `Histogram`: Displays histogram for generated synthetic and observed streamflow time series entirely. Also shown the histogram the oserved time series after transformation to normal, after transformation to normal and standardization and the raw output of the autoregressive model. Additionally histogram of the residuals is plotted.
 
-`IHA`: Displays the IHA indicators of Group 1, Group 2, Group 4,Group 5-1 and Group 5-2 for the synthetic and observed streamflow.
+`IHA`: Displays the IHA (indicators of Hydrologic Alteration) indicators of Group 1, Group 2, Group 4,Group 5-1 and Group 5-2 for the synthetic and observed streamflow.
 
 `Simple Test Statistic`: Displays simple test statisic which compares the minimum, maximum, mean, standard deviation and skewness coefficient between synthetic and observed time series.
 
@@ -83,46 +83,6 @@ Tools to navigate inside the plots.
 ![](images/zoomin.png "Zoom in"): Zoom in
 
 ![](images/zoomout.png "Zoom out"): Zoom out
-
----
-
-```flow
-sub1=>subroutine: Input
-sub2=>subroutine: Time Period
-sub3=>subroutine: Generate Streamflow
-sub4=>subroutine: Output
-
-sub1->sub2->sub3->sub4->
-
-op3=>operation: Export
-```
-
-```flow
-sub1=>subroutine: Input
-i1=>inputoutput: Date format
-i2=>inputoutput: NA format
-op1=>operation: Load .csv
-sub1(right)->i1(right)->i2(right)->op1
-```
-
-```flow
-sub2=>subroutine: Time Period
-i3=>inputoutput: Start date
-i4=>inputoutput: End date
-sub2(right)->i3(right)->i4(right)
-```
-
-```flow
-sub3=>subroutine: Generate Streamflow
-op2=>operation: Run
-sub3(right)->op2
-```
-
-```flow
-sub4=>subroutine: Output
-op3=>operation: Export
-sub4(right)->op3
-```
 
 ## Example
 
