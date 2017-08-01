@@ -1,6 +1,6 @@
 # ![](images/icon_48x48.png "Icon") Streamflow Generator (Qsynth)
 
-**Streamflow generator** synthesises an artificial streamflow time series with daily values based on autoregressive modeling. The generation merely based on an observed streamflow time series. The implemented approach takes roughly a bearing described in Salas (1993)[^1]
+**Streamflow generator** synthesises an artificial streamflow time series with daily values based on autoregressive modeling. The generation merely based on an observed streamflow time series. The implemented approach takes roughly a bearing described in Salas (1993)[1]. In addition a filter is incorporated to reduce the noise which occurs at low and medium flow rates. By applying a moving average with moving window size which means that the window size is altering the noise is smoothed. The filter starts the lowest flow rate with a certain window size and decreases linearly until also a certain threshold for streamflow is reached after where the filter is not be applied anymore. To find the optimal starting window size and ending streamflow threshold both parameters are varied. For the different settings then the autocorrelation function (ACF) and the Indicators of Hydrologic Alteration (IHA)[2] (except Group 4) are calculated for the observed and the synthetic streamflow overlapping the same time period to form the difference. Subsequently the average of the difference for the ACF and IHAs is calculated. Out of it the geometric mean is determined. The parameter set which minimizes the geometric mean is found to be optimal.
 
 ## License
 
@@ -15,7 +15,7 @@ This software can be distributed freely under the GPL v2 license. Please read th
 
 ## Directions for Use
 
-In order to generate an artificial streamflow time series with the Streamflow Generator the application is divided inti four subroutines which need to be executed sequentially. Each subroutine is explained in more detail below. A ![](images/edit.png "Edit Field") means that a manual input is required. The ![](images/popupmenu.png "Popup Menu") is used to switch between the figures. On the top left you find a menu bar which you can use to navigate inside the figures.
+In order to generate an artificial streamflow time series with the Streamflow Generator the application is divided inti four subroutines which need to be executed sequentially. Each subroutine is explained in more detail below. A rectangle ![](images/edit.png "Edit Field") means that a manual input is required. The popup menu ![](images/popupmenu.png "Popup Menu") is used to switch between the figures. On the top left you find a menu bar which you can use to navigate inside the figures.
 
 ![](images/GUI.png "GUI")
 
@@ -65,7 +65,7 @@ In order to generate an artificial streamflow time series with the Streamflow Ge
 
 `Histogram`: Displays histogram for generated synthetic and observed streamflow time series entirely. Also shown the histogram the oserved time series after transformation to normal, after transformation to normal and standardization and the raw output of the autoregressive model. Additionally histogram of the residuals is plotted.
 
-`IHA`: Displays the IHA (indicators of Hydrologic Alteration) indicators of Group 1, Group 2, Group 4,Group 5-1 and Group 5-2 for the synthetic and observed streamflow.
+`IHA`: Displays the IHA (Indicators of Hydrologic Alteration) indicators of Group 1, Group 2, Group 4,Group 5-1 and Group 5-2 for the synthetic and observed streamflow.
 
 `Simple Test Statistic`: Displays simple test statisic which compares the minimum, maximum, mean, standard deviation and skewness coefficient between synthetic and observed time series.
 
@@ -99,4 +99,6 @@ An example file how to use the generator is provided:
 > dd-mm-YYYY       | x3
 >  ...                        | ...
 
- [^1]: Salas, J.D., 1993. Analysis and modeling of hydrologic time series. In: Maidment, D.R. (Ed.), Handbook of Hydrology. McGraw-Hill, pp. 1-72.
+ [1]: Salas, J.D., 1993. Analysis and modeling of hydrologic time series. In: Maidment, D.R. (Ed.), Handbook of Hydrology. McGraw-Hill, pp. 1-72.
+ 
+ [2]: Richter, B.D., Baumgartner, J.V., Powell, J., Braun, D.P., 1996. A method for assessing hydrologic alteration within ecosystems. Conservation biology, 10(4): 1163-1174.

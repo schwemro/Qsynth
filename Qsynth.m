@@ -444,7 +444,7 @@ classdef Qsynth < handle
                     IHA_ind_syn_mws_mean=mean(IHA_ind_syn_mws,2);
                     IHA_ind_syn_mws_mean_1 = [IHA_ind_syn_mws_mean(1:22); IHA_ind_syn_mws_mean(27:34)];
                     IHA_diff = abs(IHA_ind_obs_mean_1-IHA_ind_syn_mws_mean_1);
-                    mean_IHA_diff = mean(IHA_diff);
+                    mean_IHA_diff = geomean(IHA_diff);
 
                     acf_syn_mws = autocorr(Q_syn_mws, 100);
                     acf_diff = abs(acf_obs-acf_syn_mws);
