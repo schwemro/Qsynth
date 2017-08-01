@@ -15,13 +15,15 @@ This software can be distributed freely under the GPL v2 license. Please read th
 
 ## Directions for Use
 
+In order to generate an artificial streamflow time series with the Streamflow Generator the application is divided inti four subroutines which need to be executed sequentially. Each subroutine is explained in more detail below. A ![](images/edit.png "Edit Field") means that a manual input is required. The ![](images/popupmenu.png "Popup Menu") is used to switch between the figures. On the top left you find a menu bar which you can use to navigate inside the figures.
+
 ![](images/GUI.png "GUI")
 
  **Input**
 
-`dd/MM/yyyy`: Indicate here the date format of your time series.
+`Date Format`: Indicate here the date format of your time series (e.g. dd/MM/yyyy).
 
-`NA`: Indicate here the format of the missing values in your time series.
+`NA`: Indicate here the format of the missing values in your time series (e.g. N/A).
 
 `Load .csv`: Imports with observed streamflow time series into the application. A new window pops up where the path to the .csv-file can be either entered manually or selecting it by browsing.
 
