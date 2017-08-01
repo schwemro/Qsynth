@@ -19,70 +19,71 @@ This software can be distributed freely under the GPL v2 license. Please read th
 
 
 
-> **Input**
+ **Input**
 
->`dd/MM/yyyy`: Indicate here the date format of your time series.
+`dd/MM/yyyy`: Indicate here the date format of your time series.
 
->`NA`: Indicate here the format of the missing values in your time series.
+`NA`: Indicate here the format of the missing values in your time series.
 
->`Load .csv`: Imports with observed streamflow time series into the application. A new window pops up where the path to the .csv-file can be either entered manually or selecting it by browsing.
->![](images/loadcsv.png "Load .csv")
->`Daily Streamflow`: Displays observed streamflow time series.
+`Load .csv`: Imports with observed streamflow time series into the application. A new window pops up where the path to the .csv-file can be either entered manually or selecting it by browsing.
+![](images/loadcsv.png "Load .csv")
 
->`Seasonality`: Daily and monthly runoff regime as well as parde coefficient are illustrated.
+`Daily Streamflow`: Displays observed streamflow time series.
 
----
-
->**Time Period**
-
->`Start Date`: Indicate here the start date of the synthetic streamflow time series which will be generated.
-
->`End Date`: Indicate here the end date of the synthetic streamflow time series which will be generated.
+`Seasonality`: Daily and monthly runoff regime as well as parde coefficient are illustrated.
 
 ---
 
->**Generate Streamflow**
+**Time Period**
 
->`Run`: Generates the synthetic streamflow time series.
+`Start Date`: Indicate here the start date of the synthetic streamflow time series which will be generated.
 
----
-
->**AR(p)**
->
-> `p`: Autoregressive order used to generate the streamflow time series. Value gets updated after streamflow has been succesfully generated.
+`End Date`: Indicate here the end date of the synthetic streamflow time series which will be generated.
 
 ---
 
->**Output**
+**Generate Streamflow**
 
->`Synthetic Streamflow`: Displays generated streamflow time series with and without observed values.
+`Run`: Generates the synthetic streamflow time series.
 
->`Filter`: Displays range of moving average with moving window size.
+---
 
->`Autocorrelation`: Displays autocorrelation for generated synthetic and observed streamflow time series entirely, for each month and for the residuals of the autoregressive model.
+**AR(p)**
 
->`Histogram`: Displays histogram for generated synthetic and observed streamflow time series entirely. Also shown the histogram the oserved time series after transformation to normal, after transformation to normal and standardization and the raw output of the autoregressive model. Additionally histogram of the residuals is plotted.
+`p`: Autoregressive order used to generate the streamflow time series. Value gets updated after streamflow has been succesfully generated.
 
->`IHA`: Displays the IHA indicators of Group 1, Group 2, Group 4,Group 5-1 and Group 5-2 for the synthetic and observed streamflow.
+---
 
->`Simple Test Statistic`: Displays simple test statisic which compares the minimum, maximum, mean, standard deviation and skewness coefficient between synthetic and observed time series.
+**Output**
 
->`Volume`: Displays the annually and monthly cumulated volume.
+`Synthetic Streamflow`: Displays generated streamflow time series with and without observed values.
 
->`Export`: Exporting all the plots as .pdf and generated synthetic streamflow time series to .csv. A new window pops up where the path to the folder can be either entered manually or selecting it by browsing. All files will be exported to the indicated folder.
->![](images/export.png "Export")
+`Filter`: Displays range of moving average with moving window size.
+
+`Autocorrelation`: Displays autocorrelation for generated synthetic and observed streamflow time series entirely, for each month and for the residuals of the autoregressive model.
+
+`Histogram`: Displays histogram for generated synthetic and observed streamflow time series entirely. Also shown the histogram the oserved time series after transformation to normal, after transformation to normal and standardization and the raw output of the autoregressive model. Additionally histogram of the residuals is plotted.
+
+`IHA`: Displays the IHA indicators of Group 1, Group 2, Group 4,Group 5-1 and Group 5-2 for the synthetic and observed streamflow.
+
+`Simple Test Statistic`: Displays simple test statisic which compares the minimum, maximum, mean, standard deviation and skewness coefficient between synthetic and observed time series.
+
+`Volume`: Displays the annually and monthly cumulated volume.
+
+`Export`: Exporting all the plots as .pdf and generated synthetic streamflow time series to .csv. A new window pops up where the path to the folder can be either entered manually or selecting it by browsing. All files will be exported to the indicated folder.
+![](images/export.png "Export")
 
 
 ---
->**Menu Bar**
+**Menu Bar**
 
-> Tools to navigate inside the plots.
+Tools to navigate inside the plots.
 
->![](images/pan.png "Pan"): Pan
+![](images/pan.png "Pan"): Pan
 
->![](images/zoomin.png "Zoom in"): Zoom in
+![](images/zoomin.png "Zoom in"): Zoom in
 
->![](images/zoomout.png "Zoom out"): Zoom out
+![](images/zoomout.png "Zoom out"): Zoom out
 
 ---
 
