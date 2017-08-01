@@ -75,7 +75,14 @@ This software can be distributed freely under the GPL v2 license. Please read th
 
 ---
 >**Menu Bar**
->
+
+> Tools to navigate inside the plots.
+
+>![](images/pan.png "Pan"): Pan
+
+>![](images/zoomin.png "Zoom in"): Zoom in
+
+>![](images/zoomout.png "Zoom out"): Zoom out
 
 ---
 
@@ -121,7 +128,7 @@ sub4(right)->op3
 
 An example file how to use the generator is provided:
 
-- *example/test.csv*: File which contains an observed streamflow time series with daily values used as input for the streamflow generator. May also be used what your input file has to look like. Otherwise the application will not be able to read the file. A blueprint is depicted in the table below.
+- *example/example.csv*: File which contains an observed streamflow time series with daily values used as input for the streamflow generator. May also be used what your input file has to look like. Otherwise the application will not be able to read the file. A blueprint is depicted in the table below.
 
 > **Date**           | **Q**
 > -------------------|------
