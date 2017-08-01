@@ -1,70 +1,81 @@
-Streamflow Generator (Qsynth)
-=============================
+# ![](images/icon_48x48.png "Icon") Streamflow Generator (Qsynth)
 
-**Streamflow generator** synthesises an artificial streamflow time series with daily values. The generation merely based on an observed streamflow time series. The implemented approach takes roughly a bearing described in Salas (1993)[^1]
+**Streamflow generator** synthesises an artificial streamflow time series with daily values based on an autoregressive model. The generation merely based on an observed streamflow time series. The implemented approach takes roughly a bearing described in Salas (1993)[^1]
 
-License
----
+## License
+
 This software can be distributed freely under the GPL v2 license. Please read the LICENSE for further information.
 
 © 2017, Robin Schwemmle (<rschwemmle@yahoo.de>)
 
-Structure
----
+## Structure
+
 * Directions for Use
 * Example
 
-Directions for Use
----
-![](/Users/robinschwemmle/Desktop/MATLAB/Stream_Scale_Model_for_SHP_Efficiency/Qsynth/GUI/GUI.png "Figure 1")
+## Directions for Use
+
+![](images/GUI.png "GUI")
 
 
->**Input**
 
->`dd/MM/yyyy`: Indicate date format of your time series
+> **Input**
 
->`NA`: Indicate format of the missing values in your time series
+>`dd/MM/yyyy`: Indicate here the date format of your time series.
 
->`Load .csv`: Imports with observed streamflow values into the application
+>`NA`: Indicate here the format of the missing values in your time series.
 
-> `Daily Streamflow`: Displays observed streamflow time series
+>`Load .csv`: Imports with observed streamflow time series into the application. A new window pops up where the path to the .csv-file can be either entered manually or selecting it by browsing.
+>![](images/loadcsv.png "Load .csv")
+>`Daily Streamflow`: Displays observed streamflow time series.
 
-> `Seasonality`: Daily and monthly runoff regime as well as parde coefficient are illustrated
+>`Seasonality`: Daily and monthly runoff regime as well as parde coefficient are illustrated.
 
 ---
 
 >**Time Period**
 
->`Start Date`:
+>`Start Date`: Indicate here the start date of the synthetic streamflow time series which will be generated.
 
->`End Date`:
+>`End Date`: Indicate here the end date of the synthetic streamflow time series which will be generated.
 
 ---
 
 >**Generate Streamflow**
 
->`Run`:
+>`Run`: Generates the synthetic streamflow time series.
 
 ---
 
+>**AR(p)**
+>
+> `p`: Autoregressive order used to generate the streamflow time series. Value gets updated after streamflow has been succesfully generated.
+
+---
 
 >**Output**
 
->`Synthetic Streamflow`:
+>`Synthetic Streamflow`: Displays generated streamflow time series with and without observed values.
 
->`Filter`:
+>`Filter`: Displays range of moving average with moving window size.
 
->`Autocorrelation`:
+>`Autocorrelation`: Displays autocorrelation for generated synthetic and observed streamflow time series entirely, for each month and for the residuals of the autoregressive model.
 
-> `Histogram`:
+>`Histogram`: Displays histogram for generated synthetic and observed streamflow time series entirely. Also shown the histogram the oserved time series after transformation to normal, after transformation to normal and standardization and the raw output of the autoregressive model. Additionally histogram of the residuals is plotted.
 
-> `IHA`:
+>`IHA`: Displays the IHA indicators of Group 1, Group 2, Group 4,Group 5-1 and Group 5-2 for the synthetic and observed streamflow.
 
-> `Simple Test Statistic`:
+>`Simple Test Statistic`: Displays simple test statisic which compares the minimum, maximum, mean, standard deviation and skewness coefficient between synthetic and observed time series.
 
-> `Volume`:
+>`Volume`: Displays the annually and monthly cumulated volume.
 
-> `Export`:
+>`Export`: Exporting all the plots as .pdf and generated synthetic streamflow time series to .csv. A new window pops up where the path to the folder can be either entered manually or selecting it by browsing. All files will be exported to the indicated folder.
+>![](images/export.png "Export")
+
+
+---
+>**Menu Bar**
+>
 
 ---
 
@@ -106,8 +117,8 @@ op3=>operation: Export
 sub4(right)->op3
 ```
 
-Example
----
+## Example
+
 An example file how to use the generator is provided:
 
 - *example/test.csv*: File which contains an observed streamflow time series with daily values used as input for the streamflow generator. May also be used what your input file has to look like. Otherwise the application will not be able to read the file. A blueprint is depicted in the table below.
