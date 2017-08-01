@@ -17,8 +17,6 @@ This software can be distributed freely under the GPL v2 license. Please read th
 
 ![](images/GUI.png "GUI")
 
-
-
  **Input**
 
 `dd/MM/yyyy`: Indicate here the date format of your time series.
@@ -26,6 +24,7 @@ This software can be distributed freely under the GPL v2 license. Please read th
 `NA`: Indicate here the format of the missing values in your time series.
 
 `Load .csv`: Imports with observed streamflow time series into the application. A new window pops up where the path to the .csv-file can be either entered manually or selecting it by browsing.
+
 ![](images/loadcsv.png "Load .csv")
 
 `Daily Streamflow`: Displays observed streamflow time series.
@@ -71,8 +70,8 @@ This software can be distributed freely under the GPL v2 license. Please read th
 `Volume`: Displays the annually and monthly cumulated volume.
 
 `Export`: Exporting all the plots as .pdf and generated synthetic streamflow time series to .csv. A new window pops up where the path to the folder can be either entered manually or selecting it by browsing. All files will be exported to the indicated folder.
-![](images/export.png "Export")
 
+![](images/export.png "Export")
 
 ---
 **Menu Bar**
