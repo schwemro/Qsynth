@@ -91,7 +91,7 @@ classdef Qsynth < handle
             grid;
             xlabel('Date');
             ylabel('Q [m^3/s]');
-            saveas(f1,[obj.dir_results '/Daily_Runoff.fig']);
+            saveas(f1,[obj.dir_results '/daily_streamflow.fig']);
         end
 
         function perennial(obj)
@@ -208,7 +208,7 @@ classdef Qsynth < handle
             ylim([0,ylim_up]);
             xlabel('Month');
             ylabel('Q [m^3/s]');
-            saveas(f1,[obj.dir_results '/Runoff_Regime_monthly.fig']);
+            saveas(f1,[obj.dir_results '/runoff_regime_monthly.fig']);
 
             f2 = figure('Name','Parde Coefficient','NumberTitle','off');
             plot(Q_regime_monthly.MM, Q_regime_monthly.parde, '-bo');
@@ -221,7 +221,7 @@ classdef Qsynth < handle
             ylim([0,ylim_up]);
             xlabel('Month');
             ylabel('[-]');
-            saveas(f2,[obj.dir_results '/Parde_coefficient.fig']);
+            saveas(f2,[obj.dir_results '/parde_coefficient.fig']);
 
             f3 = figure('Name','Runoff Regime (daily)','NumberTitle','off');
             plot(obj.Q_regime_daily.DD, obj.Q_regime_daily.nanmean_Q, '-b');
@@ -235,7 +235,7 @@ classdef Qsynth < handle
             ylim([0,ylim_up]);
             xlabel('Day of Year');
             ylabel('Q [m^3/s]');
-            saveas(f3,[obj.dir_results '/Runoff_Regime_daily.fig']);
+            saveas(f3,[obj.dir_results '/runoff_regime_daily.fig']);
         end
 
         function rmseas(obj, Q_regime_daily_fit, Q_std_daily_fit)
@@ -263,7 +263,7 @@ classdef Qsynth < handle
             grid;
             xlabel('Date');
             ylabel('Q [m^3/s]');
-            saveas(f1,[obj.dir_results '/Standardized_Daily_Runoff.fig']);
+            saveas(f1,[obj.dir_results '/standardized_daily_streamflow.fig']);
         end
 
         function determineorder(obj)
@@ -302,7 +302,7 @@ classdef Qsynth < handle
             title('');
             xlabel('Lag [Days]');
             ylabel('PACF');
-            saveas(f1,[obj.dir_results '/ACF_and_PACF.fig']);
+            saveas(f1,[obj.dir_results '/acf_and_pacf.fig']);
         end
 
         function selectmodel(obj, Q_trans_stand)
@@ -681,14 +681,14 @@ classdef Qsynth < handle
             axes('position',[p2(1) p2(2) p2(3) height],'visible','off');
             ylabel('Probability','visible','on');
             %             saveas(f1,[obj.dir_results '/Histograms.pdf'])
-            saveas(f2,[obj.dir_results '/Hist_obs_vs_syn.fig'])
+            saveas(f2,[obj.dir_results '/histogram_obs_vs_syn.fig'])
 
             f3 = figure('Name','Histogram of Residuals','NumberTitle', 'off');
             histogram(obj.tt_syn.E,'FaceColor','k','Normalization','probability');
             grid; title('Distribution of \epsilon');
             xlabel('Q [m^3/s]');
             ylabel('Probability');
-            saveas(f3,[obj.dir_results '/Histogram_of_Residuals.fig']);
+            saveas(f3,[obj.dir_results '/histogram_residuals.fig']);
         end
 
         function testautocor(obj)
@@ -704,7 +704,7 @@ classdef Qsynth < handle
             title('');
             xlabel('Lag [Days]');
             ylabel('ACF');
-            saveas(f1,[obj.dir_results '/ACF_of_Residuals.fig']);
+            saveas(f1,[obj.dir_results '/acf_residuals.fig']);
 
             f2 = figure('Name','ACF of Obs & Syn','NumberTitle','off');
             subplot(2,1,1);
@@ -719,7 +719,7 @@ classdef Qsynth < handle
             xlim([0 100]);
             xlabel('Lag [Days]');
             ylabel('ACF');
-            saveas(f2,[obj.dir_results '/ACF_of_Obs_and_Syn.fig']);
+            saveas(f2,[obj.dir_results '/acf_obs_and_syn.fig']);
 
             f3 = figure('Name','PACF of Obs & Syn','NumberTitle','off');
             subplot(2,1,1);
@@ -734,7 +734,7 @@ classdef Qsynth < handle
             title(obj.approach_str{obj.approach});
             xlabel('Lag [Days]');
             ylabel('PACF');
-            saveas(f3,[obj.dir_results '/PACF_Obs_vs_Syn.fig']);
+            saveas(f3,[obj.dir_results '/pacf_obs_vs_syn.fig']);
         end
 
         function ACFmonths(obj)
@@ -758,7 +758,7 @@ classdef Qsynth < handle
                 xlim([0 100]);
                 xlabel('Lag [Days]');
                 ylabel('ACF');
-                saveas(f,[obj.dir_results '/ACF_of_Obs_and_Syn_' num2str(i) '.fig']);
+                saveas(f,[obj.dir_results '/acf_obs_and_syn_' num2str(i) '.fig']);
             end
         end
 
