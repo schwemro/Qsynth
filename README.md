@@ -12,8 +12,11 @@ This software can be distributed freely under the GPL v2 license. Please read th
 
 ## Structure
 
+* Installation
 * Directions for Use
 * Example
+
+## Installation
 
 ## Directions for Use
 
