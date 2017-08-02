@@ -17,7 +17,7 @@ This software can be distributed freely under the GPL v2 license. Please read th
 * Example
 
 ## Installation
-* OS-Indenpendent: Requires at least MATLAB R2016b and MY_XTICKLABELS(can be installed via Add-On-Explorer)
+* OS-Indenpendent: Requires at least MATLAB R2016b and MY_XTICKLABELS (can be installed via Add-On-Explorer)
 * Windows:
 * MacOS:
 
