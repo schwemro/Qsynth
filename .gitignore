@@ -14,9 +14,11 @@ GUI_with_GUIDE.md
 *.csv
 *.mat
 *.svg
+*.prj
 .DS_Store
 # which folders to ignore
 /results/
 /input/
 /robustness/
 /test/
+/GUI/Streamflow_Generator_resources/
