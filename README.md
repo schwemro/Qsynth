@@ -80,7 +80,7 @@ In order to generate an artificial streamflow time series with the Streamflow Ge
 ![](images/export.png "Export")
 
 ---
-**Menu Bar**
+**Tool Bar**
 
 Tools to navigate inside the plots.
 
