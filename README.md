@@ -2,7 +2,7 @@
 
 The **generator** synthesises an artificial streamflow time series with daily values based on autoregressive modeling. The generation merely based on an observed streamflow time series. The implemented approach takes roughly a bearing described in Salas (1993)[1].
 
- In addition a **filter** is incorporated to reduce the noise which occurs at low and medium flow rates. By applying a moving average with moving window size the noise is smoothed. It means that the window size is altering. The filter starts the lowest flow rate with a certain window size and decreases linearly until also a certain threshold for streamflow is reached after where the filter is not be applied anymore. To find the optimal starting window size and ending streamflow threshold both parameters are varied. For the different settings then the autocorrelation function (ACF) and the Indicators of Hydrologic Alteration (IHA)[2] (except Group 3) are calculated for the observed and the synthetic streamflow overlapping the same time period to form the difference. Subsequently the arithmetic mean of the difference for the ACF and the geomteric mean of the difference for the IHAs is calculated. Out of it the geometric mean is determined. The parameter set which minimizes the geometric mean is found to be optimal.
+ In addition a **filter** is incorporated to reduce the noise which occurs at low and medium flow rates. By applying a moving average with moving window size the noise is smoothed. It means that the window size is altering. The filter starts the lowest flow rate with a certain window size and decreases linearly until also a certain threshold for streamflow is reached after where the filter is not be applied anymore. To find the optimal starting window size and ending streamflow threshold both parameters are varied. For the different settings then the autocorrelation function (ACF) and the Indicators of Hydrologic Alteration (IHA)[2] (except Group 3) are calculated for the observed and the synthetic streamflow overlapping the same time period to form the difference. Subsequently the arithmetic mean of the difference for the ACF and the IHAs is calculated. Out of it the geometric mean is determined. The parameter set which minimizes the geometric mean is found to be optimal.
 
 ## License
 
@@ -17,6 +17,9 @@ This software can be distributed freely under the GPL v2 license. Please read th
 * Example
 
 ## Installation
+* OS-Indenpendent: Requires at least MATLAB R2016b and MY_XTICKLABELS(can be installed via Add-On-Explorer)
+* Windows:
+* MacOS:
 
 ## Directions for Use
 
