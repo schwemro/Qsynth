@@ -12,21 +12,11 @@ opt_val.txt
 *.fig
 *.csv
 *.mat
+*.svg
 .DS_Store
 # which folders to ignore
-/Tisean_3.0.1/
 /results/
 /input/
-/MC/
-/pre/
-/1/
-/2/
-/3/
-/4/
-/5/
-/6/
-/7/
-/8/
-/9/
-/10/
+/robustness/
 /GUI/
+/test/
