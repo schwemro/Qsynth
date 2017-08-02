@@ -3,6 +3,8 @@
 clearws.m
 obsandsyn.m
 opt_val.txt
+flowcharts.md
+GUI_with_GUIDE.md
 *.mex*
 *.asv
 *.log
