@@ -11,9 +11,9 @@ This software can be distributed freely under the GPL v2 license. Please read th
 © 2017, Robin Schwemmle (<rschwemmle@yahoo.de>)
 
 ## Structure
-* __[Installation](#Installation)__
-* __[Directions for Use](#Directions-for-Use)__
-* __[Example](#Example)__
+* __[Installation](#installation)__
+* __[Directions for Use](#directions-for-use)__
+* __[Example](#example)__
 
 ## Installation
 * **OS_Indenpendent:** Requires at least MATLAB R2016b and MY_XTICKLABELS (can be installed via Add-On-Explorer). Run main.m to launch GUI.
