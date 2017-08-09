@@ -104,7 +104,7 @@ classdef Qsynth < handle
            end
         end
 
-        function fillgaps(~, Q)
+        function fillgaps(obj, Q)
             % Testing if time series exhibits gaps. If there are any gaps,
             % they are filled by using autoregressive modeling using half the
             % length of the gap as number of samples in the estimation.
@@ -119,7 +119,7 @@ classdef Qsynth < handle
             N_NA = sum(Q_NA);
             if (N_NA == 0)
                 disp('No Gaps in observed runoff time series!')
-                Q_ts_filled = Q;
+                obj.tt_obs.Q = Q;
             elseif (N_NA >= 1)
                 NA_idx = find(Q_NA==1);
                 idx = [1:1:length(NA_idx)]';
@@ -157,10 +157,10 @@ classdef Qsynth < handle
 
         function folderres(obj, fn)
             % Create folder where to store the results.
-            if nargin < 1
+            if nargin < 2
                 error('One input argument is necessary.')
             end
-            if nargin > 1
+            if nargin > 2
                 error('Too many input arguments. Only one input argument is necessary.')
             end
             obj.dir_results = fn;
@@ -273,36 +273,45 @@ classdef Qsynth < handle
               error('Too many input arguments. No input argument is necessary.')
             end
             if (obj.approach == 1)
+                [pacf,lags_pacf,bounds_pacf] = parcorr(obj.tt_obs.Q_trans_stand_d, 20);
+                k = find(pacf<bounds_pacf(1)&pacf>bounds_pacf(2));
+                obj.p = k(1) - 1;
                 obj.q = 0;
+                f1 = figure('Name','PACF','NumberTitle','off');
+                parcorr(obj.tt_obs.Q_trans_stand_d, 20);
+                xlim([0 20]);
+                text(obj.p-.5,bounds_pacf(1)+.15, ['\bf p=' int2str(obj.p)], 'FontSize', 13);
+                title('');
+                xlabel('Lag [Days]');
+                ylabel('PACF');
+                saveas(f1,[obj.dir_results '/acf_and_pacf.fig']);
             elseif (obj.approach == 2)
+                [pacf,lags_pacf,bounds_pacf] = parcorr(obj.tt_obs.Q_trans_stand_d, 20);
+                k = find(pacf<bounds_pacf(1)&pacf>bounds_pacf(2));
+                obj.p = k(1) - 1;
                 acf = autocorr(obj.tt_obs.Q_trans_stand_d, obj.N_obs-1);
                 bounds_acf = [0.4;-0.4];
                 l = find(acf<bounds_acf(1)&acf>bounds_acf(2));
                 obj.q = l(1) - 1;
+                f1 = figure('Name','ACF & PACF','NumberTitle','off');
+                subplot(2,1,1);
+                autocorr(obj.tt_obs.Q_trans_stand_d, 100);
+                text(obj.q-.5,bounds_acf(1)+.1, ['\bf q=' int2str(obj.q)], 'FontSize', 13);
+                xlim([0 100]);
+                hline = refline([0 bounds_acf(1)]);
+                hline.Color = 'red';
+                title('');
+                xlabel('Lag [Days]');
+                ylabel('ACF');
+                subplot(2,1,2);
+                parcorr(obj.tt_obs.Q_trans_stand_d, 20);
+                xlim([0 20]);
+                text(obj.p-.5,bounds_pacf(1)+.15, ['\bf p=' int2str(obj.p)], 'FontSize', 13);
+                title('');
+                xlabel('Lag [Days]');
+                ylabel('PACF');
+                saveas(f1,[obj.dir_results '/acf_and_pacf.fig']);
             end
-
-            [pacf,lags_pacf,bounds_pacf] = parcorr(obj.tt_obs.Q_trans_stand_d, 20);
-            k = find(pacf<bounds_pacf(1)&pacf>bounds_pacf(2));
-            obj.p = k(1) - 1;
-
-            f1 = figure('Name','ACF & PACF','NumberTitle','off');
-            subplot(2,1,1);
-            autocorr(obj.tt_obs.Q_trans_stand_d, 100);
-            text(obj.q-.5,bounds_acf(1)+.1, ['\bf q=' int2str(obj.q)], 'FontSize', 13);
-            xlim([0 100]);
-            hline = refline([0 bounds_acf(1)]);
-            hline.Color = 'red';
-            title('');
-            xlabel('Lag [Days]');
-            ylabel('ACF');
-            subplot(2,1,2);
-            parcorr(obj.tt_obs.Q_trans_stand_d, 20);
-            xlim([0 20]);
-            text(obj.p-.5,bounds_pacf(1)+.15, ['\bf p=' int2str(obj.p)], 'FontSize', 13);
-            title('');
-            xlabel('Lag [Days]');
-            ylabel('PACF');
-            saveas(f1,[obj.dir_results '/acf_and_pacf.fig']);
         end
 
         function selectmodel(obj, Q_trans_stand)
@@ -476,42 +485,42 @@ classdef Qsynth < handle
             t.Q_sim_dma = zeros(length(t.Q),1);
             x2 = prctile(Q,prc);
             x1 = nanmin(Q);
-            ws = zeros(ceil(N_ws/2),2);
+            mws = zeros(ceil(N_ws/2),2);
 
             if (strcmp(method,'lin'))
-                ws(:,1) = linspace(x1,x2,ceil(N_ws/2));
-                ws(:,2) = linspace(N_ws,1,ceil(N_ws/2));
+                mws(:,1) = linspace(x1,x2,ceil(N_ws/2));
+                mws(:,2) = linspace(N_ws,1,ceil(N_ws/2));
                 t.ws = zeros(length(t.Q),1);
                 for i = 1:ceil(N_ws/2)
                     if (i < ceil(N_ws/2))
-                        t.ws(t.Q>=ws(i,1)&t.Q<ws(i+1,1)) = ws(i,2);
+                        t.ws(t.Q>=mws(i,1)&t.Q<mws(i+1,1)) = mws(i,2);
                     elseif (i == ceil(N_ws/2))
-                        t.ws(t.Q>=ws(i,1)) = ws(i,2);
+                        t.ws(t.Q>=mws(i,1)) = mws(i,2);
                     end
                 end
 
             elseif (strcmp(method,'log'))
-                ws(:,1) = logspace(x1,x2,ceil(N_ws/2));
-                ws(:,2) = linspace(N_ws,1,ceil(N_ws/2));
+                mws(:,1) = logspace(x1,x2,ceil(N_ws/2));
+                mws(:,2) = linspace(N_ws,1,ceil(N_ws/2));
                 t.ws = zeros(length(t.Q),1);
                 for i = 1:ceil(N_ws/2)
                     if (i < ceil(N_ws/2))
-                        t.ws(log(t.Q)>=ws(i,1)&log(t.Q)<ws(i+1,1)) = ws(i,2);
+                        t.ws(log(t.Q)>=mws(i,1)&log(t.Q)<mws(i+1,1)) = mws(i,2);
                     elseif (i == ceil(N_ws/2))
-                        t.ws(log(t.Q)>=ws(i,1)) = ws(i,2);
+                        t.ws(log(t.Q)>=mws(i,1)) = mws(i,2);
                     end
                 end
 
             elseif (strcmp(method,'perc'))
                 perc = linspace(0,prc,ceil(N_ws/2));
-                ws(:,1) = prctile(Q,perc);
-                ws(:,2) = linspace(N_ws,1,ceil(N_ws/2));
+                mws(:,1) = prctile(Q,perc);
+                mws(:,2) = linspace(N_ws,1,ceil(N_ws/2));
                 t.ws = zeros(length(t.Q),1);
                 for i = 1:ceil(N_ws/2)
                     if (i < ceil(N_ws/2))
-                        t.ws(t.Q>=ws(i,1)&t.Q<ws(i+1,1)) = ws(i,2);
+                        t.ws(t.Q>=mws(i,1)&t.Q<mws(i+1,1)) = mws(i,2);
                     elseif (i == ceil(N_ws/2))
-                        t.ws(t.Q>=ws(i,1)) = ws(i,2);
+                        t.ws(t.Q>=mws(i,1)) = mws(i,2);
                     end
                 end
             end
@@ -558,9 +567,9 @@ classdef Qsynth < handle
             end
             Q = t.Q_sim_dma;
 
-            mws_1 = [0;ws(1,2)+2]';
+            mws_1 = [0;mws(1,2)+2]'; %TODO: Fix plot!
             mws_2 = [max(obj.tt_syn.Q_sim_re);0]';
-            mws = [mws_1;ws;mws_2];
+            mws = [mws_1;mws;mws_2];
             f1 = figure('Name','Moving average with moving window size','NumberTitle','off');
             stairs(mws(:,1), mws(:,2), 'k');
             grid;
@@ -849,7 +858,7 @@ classdef Qsynth < handle
             b(1).FaceColor = 'b';
             b(2).FaceColor = 'r';
             title('Group 5 - 2')
-            legend({'Q_{obs}','Q_{syn}'},'Box','off')
+            legend({'Q_{obs}','Q_{syn}'},'Box','off','Location','north')
             xticks([1 2])
             xticklabels({'No. of falls', 'No. of rises'})
             saveas(f5,[obj.dir_results '/IHA_group_5_2.fig']);
@@ -909,6 +918,7 @@ classdef Qsynth < handle
            b = bar([tt_vol_mm_sum.sum_vol_obs tt_vol_mm_sum.sum_vol_syn]);
            b(1).FaceColor = 'b';
            b(2).FaceColor = 'r';
+           grid;
            legend({'Q_{obs}','Q_{syn}'},'Box','off')
            xlabel('Month');
            ylabel('Volume [km^3]');
