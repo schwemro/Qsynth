@@ -8,7 +8,7 @@ The **generator** synthesises an artificial streamflow time series with daily va
 
 This software can be distributed freely under the GPL v2 license. Please read the LICENSE for further information.
 
-© 2017, Robin Schwemmle (<rschwemmle@yahoo.de>)
+© 2017, Robin Schwemmle (<robin.schwemmle@venus.uni-freiburg.de>)
 
 ## Structure
 * __[Installation](#installation)__
