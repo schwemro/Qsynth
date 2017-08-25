@@ -879,7 +879,6 @@ switch str{val}
         set(handles.axes3,'visible','off');
         set(handles.axes4,'visible','off');
         set(handles.axes5,'visible','off');
-        plot(handles.axes,handles.nan(:,1), handles.nan(:,2));
     case 'Observed & Synthetic Streamflow'
         cla(handles.axes,'reset')
         cla(handles.axes1,'reset')
@@ -979,7 +978,6 @@ switch str{val}
         set(handles.axes3,'visible','off');
         set(handles.axes4,'visible','off');
         set(handles.axes5,'visible','off');
-        plot(handles.axes,handles.nan(:,1), handles.nan(:,2));
     case 'Group 1'
         cla(handles.axes,'reset')
         cla(handles.axes1,'reset')
