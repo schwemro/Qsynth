@@ -121,7 +121,7 @@ Then import the provided example.csv. Before you generate the time series indica
 
 `End Date` = 31/12/2014
 
-Now all fields are set and you are ready for running. The output will be a synthetic time series containing 20 years of data.
+Now all fields are set and you are ready for generating. The output will be a synthetic time series containing 20 years of data.
 
 ## References
 
