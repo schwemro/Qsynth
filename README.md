@@ -109,7 +109,7 @@ An example file how to use the generator is provided:
 > dd/mm/YYYY         | y3
 >  ...               | ...
 
-First define the date format and missing like below:
+First define the date format and the missing value like below:
 
 `Date Format` = dd/mm/YYYY
 
