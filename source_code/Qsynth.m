@@ -1,14 +1,14 @@
 classdef Qsynth < handle
-    % Qsynth Implementing an approach to generate artificial daily streamflow
+    % Qsynth Implementing an approach to generate an artificial daily streamflow
     % time series according to Salas (1993)
     %
     % Build for command line usage
     % Requires: MY_XTICKLABELS
     % MATLAB R2017a
-    % (c) Copyright 2017, Robin Schwemmle <rschwemmle@yahoo.de>
+    % (c) Copyright 2017, Robin Schwemmle <robin.schwemmle@venus.uni-freiburg.de>
 
     properties
-        approach % 1 = 'AR' or 2 = 'ARMA'
+        approach % 1 = 'AR' (or 2 = 'ARMA')
         start_date % Start date of synthetic runoff time series
         end_date % End date of synthetic runoff time series
         tt_obs % Timetable with observed runoff
@@ -52,7 +52,7 @@ classdef Qsynth < handle
         end
 
         function settimeperiod(obj, start_date, end_date, dateformat_str)
-            % Indicate start and end date of synthetic streamflow time
+            % Indicate start and end date of the synthetic streamflow time
             % series. Input arguments are start and end date and the
             % corresponding dateformat.
             if nargin < 4
@@ -66,7 +66,7 @@ classdef Qsynth < handle
         end
 
         function importts(obj, filepath_str, dateformat_str, na_str)
-            % Import runoff time series. Input arguments are path to
+            % Imports the streamflow time series. Input arguments are path to
             % .csv-file, format of date column and string which marks NaN.
             if nargin < 4
                 error('Three input arguments are necessary.')
@@ -108,7 +108,7 @@ classdef Qsynth < handle
             % Testing if time series exhibits gaps. If there are any gaps,
             % they are filled by using autoregressive modeling using half the
             % length of the gap as number of samples in the estimation.
-            % Input argument is time series.
+            % Input argument is the streamflow time series.
             if nargin < 2
                 error('One input argument is necessary.')
             end
@@ -156,7 +156,7 @@ classdef Qsynth < handle
         end
 
         function folderres(obj, fn)
-            % Create folder where to store the results.
+            % Creates a folder where to store the results.
             if nargin < 2
                 error('One input argument is necessary.')
             end
@@ -168,7 +168,7 @@ classdef Qsynth < handle
         end
 
         function Q_log = logtransform(~, Q)
-            % Logarithmic transformation of runoff time series. Input argument
+            % Logarithmic transformation of the streamflow time series. Input argument
             % is time series. Output argument is log transformed time series.
             if nargin < 2
                 error('One input argument is necessary.')
@@ -239,8 +239,8 @@ classdef Qsynth < handle
         end
 
         function rmseas(obj, Q_regime_daily_fit, Q_std_daily_fit)
-            % Removing trends and shifts of the runoff time series by
-            % daily standardization. Input argument are daily runoff regime
+            % Removing trends and shifts of the streamflow time series by
+            % daily standardization. Input arguments are daily runoff regime
             % and the daily standard deviation regime.
             if nargin < 3
                 error('Two input arguments are necessary.')
@@ -267,7 +267,7 @@ classdef Qsynth < handle
         end
 
         function determineorder(obj)
-            % Determine model order by using the autocorrelation
+            % Determining the model order by using the autocorrelation
             % and the partial autocorrelation function.
             if nargin >= 2
               error('Too many input arguments. No input argument is necessary.')
@@ -315,7 +315,7 @@ classdef Qsynth < handle
         end
 
         function selectmodel(obj, Q_trans_stand)
-            % Initialize object of time series model and estimate the according
+            % Initializes object of time series model and estimate the according
             % model paramters. Input argument is the log-transformed and standardized streamflow time
             % series.
             if nargin < 2
@@ -332,9 +332,10 @@ classdef Qsynth < handle
         end
 
         function generaterunoff(obj, EstMdl, Q_regime_daily_fit, Q_std_daily_fit)
-            % Generating articial streamflow time series. Readding the trend as well as undoing the
-            % standardization and logarithmic transformation. Input arguments are the estimated model,
-            % daily runoff regime and the daily standard deviation regime.
+            % Generating the artificial streamflow time series. Readding the trend
+            % as well as undoing the standardization and logarithmic transformation.
+            % Input arguments are the estimated model, daily runoff regime and
+            % the daily standard deviation regime.
             if nargin < 4
                 error('Three input arguments are necessary.')
             end
@@ -362,9 +363,9 @@ classdef Qsynth < handle
         end
 
         function Q_sim = regeneraterunoff(~, EstMdl, tt_sim)
-            % Regenerating articial streamflow time series. Input arguments are
+            % Regenerating the articial streamflow time series. Input arguments are
             % the estimated model and the timetable of the synthetic time series.
-            % Output argument is the simulated streamflow time series.
+            % Output argument is the generated streamflow time series.
             if nargin < 3
                 error('Two input arguments are necessary.')
             end
@@ -378,7 +379,7 @@ classdef Qsynth < handle
 
         function cutpeaks(obj, Q_max, EstMdl, tt_sim)
             % Cut unlikely high peaks (Q_sim > Q_max + .1*Q_max) by regenerating
-            % time series with model. Starts at 5 day backward shift. Input arguments
+            % the time series with the model. Starts with a 5 day backward shift. Input arguments
             % are the threshold above which the peaks will be cutted, the estimated model
             % and the timetable of the synthetic time series.
             if nargin < 4
@@ -415,8 +416,8 @@ classdef Qsynth < handle
         end
 
         function optMAwMWS(obj)
-            % Find optimal window size and upper threshold of Q where to start
-            % applying a moving average with moving window size.
+            % Finds the optimal window size and upper threshold of Q where to start
+            % applying a moving average with a moving window size.
             if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
@@ -469,11 +470,11 @@ classdef Qsynth < handle
         end
 
         function Q = MAwMWS(obj, Q, N_ws, prc, method)
-            % Filtering time series by moving average with moving window
-            % size. Input arguments are time series, the starting window size,
+            % Filtering the time series by a moving average with a moving window
+            % size. Input arguments are the generated time series, the starting window size,
             % streamflow percentile as far as the filtering is applied and
-            % method used for spacing. Output argument is a filtered time
-            % series.
+            % method used for spacing. Output argument is a filtered artificial
+            % streamflow time series.
             if nargin < 5
                 error('Four input arguments are necessary.')
             end
@@ -689,7 +690,6 @@ classdef Qsynth < handle
             height=p1(2)+p1(4)-p2(2);
             axes('position',[p2(1) p2(2) p2(3) height],'visible','off');
             ylabel('Probability','visible','on');
-            %             saveas(f1,[obj.dir_results '/Histograms.pdf'])
             saveas(f2,[obj.dir_results '/histogram_obs_vs_syn.fig'])
 
             f3 = figure('Name','Histogram of Residuals','NumberTitle', 'off');
@@ -701,9 +701,9 @@ classdef Qsynth < handle
         end
 
         function testautocor(obj)
-            % Testing visually for correlation in the Residuals and comapring
+            % Testing visually for correlation in the Residuals and comparing
             % the ACF of the observed and the synthetic streamflow and
-            % the PACF respectively.
+            % the PACF, respectively.
             if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
@@ -747,7 +747,7 @@ classdef Qsynth < handle
         end
 
         function ACFmonths(obj)
-            % Splitting the runoff time series into single months,
+            % Splitting the streamflow time series into single months,
             % calculate the ACF and compare between observed and synthetic
             % streamflow.
             if nargin >= 2
@@ -968,8 +968,8 @@ classdef Qsynth < handle
         end
 
         function teststats(obj)
-            % Calculate test staistsic containing mean, standard deviation,
-            % skewness coeeficient, minimum and maximum of the observed and
+            % Calculate test statistic containing mean, standard deviation,
+            % skewness coeficient, minimum and maximum of the observed and
             % the synthetic streamflow respectively.
             if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
@@ -999,7 +999,7 @@ classdef Qsynth < handle
         end
 
         function teststatstotxt(obj)
-            % Export test statistic to .txt..
+            % Export test statistic to a .txt-file.
             if nargin >= 2
                error('Too many input arguments. No input argument is necessary.')
             end
@@ -1010,8 +1010,8 @@ classdef Qsynth < handle
         end
 
         function Qtocsv(obj, Date, Q, fn)
-            % Export streamflow time series to .csv.. Input arguments
-            % are Date, streamflow and suffix of file name.
+            % Export synthetic streamflow time series to .csv-file. Input arguments
+            % are date, streamflow and suffix of file name.
             if nargin < 4
                 error('Three input arguments are necessary.')
             end

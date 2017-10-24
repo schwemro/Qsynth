@@ -1,11 +1,11 @@
 classdef Qsynth < handle
-    % Qsynth Implementing an approach to generate artificial daily streamflow
+    % Qsynth Implementing an approach to generate an artificial daily streamflow
     % time series according to Salas (1993)
     %
     % Build for GUI usage.
     % Requires: MY_XTICKLABELS
     % MATLAB R2017a,
-    % (c) Copyright 2017, Robin Schwemmle <rschwemmle@yahoo.de>
+    % (c) Copyright 2017, Robin Schwemmle <robin.schwemmle@venus.uni-freiburg.de>
 
     properties
         start_date % Start date of synthetic runoff time series
@@ -19,20 +19,20 @@ classdef Qsynth < handle
         N_sim % Number of simulated observations
         p % AR order
         w % Optimal window size for MA with MWS
-        mws % table for MA with MWS
+        mws % Table for MA with MWS
         Qx % Upper threshold for MA with MWS
-        x1_nn % lower x-axis boundary nonnormally distributed histogram
-        x2_nn % upper x-axis boundary nonnormally distributed histogram
-        x1_n % lower x-axis boundary normally distributed histogram
-        x2_n % upper x-axis boundary normally distributed histogram
-        y2_nn % upper y-axis boundary nonnormally distributed histogram
-        y2_n % upper y-axis boundary lower y-axis boundary of nonnormally distributed histogram
-        nbins_nn % amount bins nonnormally distributed histogram
-        nbins_n % amount bins normally distributed histogram
+        x1_nn % Lower x-axis boundary nonnormally distributed histogram
+        x2_nn % Upper x-axis boundary nonnormally distributed histogram
+        x1_n % Lower x-axis boundary normally distributed histogram
+        x2_n % Upper x-axis boundary normally distributed histogram
+        y2_nn % Upper y-axis boundary nonnormally distributed histogram
+        y2_n % Upper y-axis boundary lower y-axis boundary of nonnormally distributed histogram
+        nbins_nn % Amount bins nonnormally distributed histogram
+        nbins_n % Amount bins normally distributed histogram
         IHA_ind_obs_mean % IHA for observed streamflow
         IHA_ind_syn_mean % IHA for synthetic streamflow
-        tt_vol_mm % table with monthly cumulated streamflow volume
-        tt_vol_yy % table with yearly cumulated streamflow volume
+        tt_vol_mm % Table with monthly cumulated streamflow volume
+        tt_vol_yy % Table with yearly cumulated streamflow volume
         opt_val % Geometric mean of IHA and ACF for optimal w and Qx
         EstMdl % Time series model with estimated parameters (see MATLAB Documentation "arima class")
         test_stats % Table with simple test statistic
@@ -62,7 +62,7 @@ classdef Qsynth < handle
         end
 
         function importts(obj, filepath_str, dateformat_str, na_str)
-            % Import runoff time series. Input arguments are path to
+            % Imports the streamflow time series. Input arguments are path to
             % .csv-file, format of date column and string which marks NaN.
             if nargin < 4
                 error('Three input arguments are necessary.')
@@ -140,7 +140,7 @@ classdef Qsynth < handle
             % Testing if time series exhibits gaps. If there are any gaps,
             % they are filled by using autoregressive modeling using half the
             % length of the gap as number of samples in the estimation.
-            % Input argument is time series.
+            % Input argument is the streamflow time series.
             if nargin < 2
                 error('One input argument is necessary.')
             end
@@ -199,8 +199,9 @@ classdef Qsynth < handle
         end
 
         function Q_log = logtransform(~, Q)
-            % Logarithmic transformation of runoff time series. Input argument
-            % is time series. Output argument is log transformed time series.
+            % Logarithmic transformation of the streamflow time series. Input
+            % argument is the streamflow time series. Output argument is the
+            % log transformed time series.
             if nargin < 2
                 error('One input argument is necessary.')
             end
@@ -213,7 +214,6 @@ classdef Qsynth < handle
         function testseas(obj)
             % Testing visually for prevailing seasonality by plotting the
             % daily and mothly runoff regime and the parde coefficient.
-            % TODO: runoff regime and std regime as output args.
             if nargin >= 2
                 error('Too many input arguments. No input argument is necessary.')
             end
@@ -230,11 +230,9 @@ classdef Qsynth < handle
         end
 
         function rmseas(obj, Q_regime_daily_fit, Q_std_daily_fit)
-            % Removing trends and shifts of the runoff time series by
-            % daily standardization. Input argument are daily runoff regime
+            % Removing trends and shifts of the streamflow time series by
+            % daily standardization. Input argument are the daily runoff regime
             % and the daily standard deviation regime.
-            % TODO: Adjust transfer of input args and the use inside the
-            % function.
             if nargin < 3
                 error('Two input arguments are necessary.')
             end
@@ -253,7 +251,7 @@ classdef Qsynth < handle
         end
 
         function determineorder(obj)
-            % Determine model order by using the autocorrelation
+            % Determining the model order by using the autocorrelation
             % and the partial autocorrelation function.
             if nargin >= 2
                 error('Too many input arguments. No input argument is necessary.')
@@ -264,9 +262,9 @@ classdef Qsynth < handle
         end
 
         function selectmodel(obj, Q_trans_stand)
-            % Initialize object of time series model and estimate the according
-            % model paramters. Input argument is the log-transformed and standardized streamflow time
-            % series.
+            % Initializes object of time series model and estimate the according
+            % model paramters. Input argument is the log-transformed and standardized
+            % streamflow time series.
             if nargin < 2
                 error('One input argument is necessary.')
             end
@@ -280,9 +278,10 @@ classdef Qsynth < handle
         end
 
         function generaterunoff(obj, EstMdl, Q_regime_daily_fit, Q_std_daily_fit)
-            % Generating articial streamflow time series. Readding the trend as well as undoing the
-            % standardization and logarithmic transformation. Input arguments are the estimated model,
-            % daily runoff regime and the daily standard deviation regime.
+            % Generating the articial streamflow time series. Readding the trend
+            % as well as undoing the standardization and logarithmic transformation.
+            % Input arguments are the estimated model, daily runoff regime and
+            % the daily standard deviation regime.
             if nargin < 4
                 error('Three input arguments are necessary.')
             end
@@ -310,9 +309,9 @@ classdef Qsynth < handle
         end
 
         function Q_sim = regeneraterunoff(~, EstMdl, tt_sim)
-            % Regenerating articial streamflow time series. Input arguments are
+            % Regenerating the articial streamflow time series. Input arguments are
             % the estimated model and the timetable of the synthetic time series.
-            % Output argument is the simulated streamflow time series.
+            % Output argument is the generated streamflow time series.
             if nargin < 3
                 error('Two input arguments are necessary.')
             end
@@ -326,10 +325,10 @@ classdef Qsynth < handle
 
         function cutpeaks(obj, Q_max, EstMdl, tt_sim)
             % Cut unlikely high peaks (Q_sim > Q_max + .1*Q_max) by regenerating
-            % time series with model. Starts at 5 day backward shift. Input arguments
+            % the time series with the model. Starts at 5 day backward shift. Input arguments
             % are the threshold above which the peaks will be cutted, the estimated model
             % and the timetable of the synthetic time series.
-            % Output argument is the simulated streamflow time series.
+            % Output argument is the generated streamflow time series.
             if nargin < 4
                 error('Three input arguments are necessary.')
             end
@@ -365,7 +364,7 @@ classdef Qsynth < handle
 
         function optMAwMWS(obj)
             % Find optimal window size and upper threshold of Q where to start
-            % applying a moving average with moving window size.
+            % applying a moving average with a moving window size.
             if nargin >= 2
                 error('Too many input arguments. No input argument is necessary.')
             end
@@ -402,7 +401,7 @@ classdef Qsynth < handle
                     IHA_ind_syn_mws_mean=mean(IHA_ind_syn_mws,2);
                     IHA_ind_syn_mws_mean_1 = [IHA_ind_syn_mws_mean(1:22); IHA_ind_syn_mws_mean(27:34)];
                     IHA_diff = abs(IHA_ind_obs_mean_1-IHA_ind_syn_mws_mean_1);
-                    mean_IHA_diff = mean(IHA_diff); %TODO: check if it's correct!
+                    mean_IHA_diff = mean(IHA_diff);
 
                     acf_syn_mws = autocorr(Q_syn_mws, 100);
                     acf_diff = abs(acf_obs-acf_syn_mws);
@@ -418,10 +417,10 @@ classdef Qsynth < handle
         end
 
         function Q = MAwMWS(obj, Q, N_ws, prc)
-            % Filtering time series by moving average with moving window
-            % size. Input arguments are time series, the starting window size,
-            % streamflow percentile as far as the filtering is applied. 
-            % Output argument is a filtered time series.
+            % Filtering the time series by a moving average with a moving window
+            % size. Input arguments are the generated time series, the starting window size,
+            % streamflow percentile as far as the filtering is applied.
+            % Output argument is a filtered artificial streamflow time series.
             if nargin < 4
                 error('Three input arguments are necessary.')
             end
@@ -606,8 +605,8 @@ classdef Qsynth < handle
         end
 
         function teststats(obj)
-            % Calculate test staistsic containing mean, standard deviation,
-            % skewness coeeficient, minimum and maximum of the observed and
+            % Calculate test statistic containing mean, standard deviation,
+            % skewness coeficient, minimum and maximum of the observed and
             % the synthetic streamflow respectively.
             if nargin >= 2
                 error('Too many input arguments. No input argument is necessary.')
@@ -626,7 +625,7 @@ classdef Qsynth < handle
         end
 
         function teststatstotxt(obj)
-            % Export test statistic to .txt..
+            % Export test statistic to a .txt-file.
             if nargin >= 2
                 error('Too many input arguments. No input argument is necessary.')
             end
@@ -637,8 +636,8 @@ classdef Qsynth < handle
         end
 
         function Qtocsv(obj, Date, Q, fn)
-            % Export streamflow time series to .csv.. Input arguments
-            % are Date, streamflow and suffix of file name.
+            % Export synthetic streamflow time series to a .csv-file. Input arguments
+            % are date, streamflow and suffix of file name.
             if nargin < 4
                 error('Three input arguments are necessary.')
             end

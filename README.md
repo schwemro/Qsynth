@@ -2,13 +2,13 @@
 
 The **generator** synthesises an artificial streamflow time series with daily values based on autoregressive modeling. Its generation merely based on an observed streamflow time series. The implemented approach takes roughly a bearing described in Salas (1993)[1].
 
- In addition to Salas (1993)[1] a **filter** is incorporated to reduce the noise which occurs at low and medium flow rates. By applying a moving average with moving window size the noise is smoothed. It means that the window size is altering. The filter starts the lowest flow rate with a certain window size and decreases linearly until also a certain threshold for streamflow is reached after where the filter is not be applied anymore. To find the optimal starting window size and ending streamflow threshold both parameters are varied. For the different settings then the autocorrelation function (ACF) and the Indicators of Hydrologic Alteration (IHA)[2] (except Group 3) are calculated for the observed and the synthetic streamflow overlapping the same time period to form the difference. Subsequently the arithmetic mean of the difference for the ACF and the IHAs is calculated. Out of it the geometric mean is determined. The parameter set which minimizes the geometric mean is found to be optimal.
+ In addition to Salas (1993)[1] a **filter** is applied to the time series resulting from the AR model to reduce the noise which occurs at low and medium flow rates. By applying a moving average with moving window size the noise is smoothed. It means that the window size is altering. The filter starts the lowest flow rate with a certain window size and decreases linearly until also a certain threshold for streamflow is reached after where the filter is not be applied anymore. To find the optimal starting window size and ending streamflow threshold both parameters are varied. For the different settings then the autocorrelation function (ACF) and the Indicators of Hydrologic Alteration (IHA)[2] (except Group 3) are calculated for the observed and the synthetic streamflow overlapping the same time period to form the difference. Subsequently the arithmetic mean of the difference for the ACF and the IHAs is calculated. Out of it the geometric mean is determined. The parameter set which minimizes the geometric mean is found to be optimal.
 
 ## License
 
 This software can be distributed freely under the GPL v2 license. Please read the LICENSE for further information.
 
-© 2017, Robin Schwemmle (<robin.schwemmle@venus.uni-freiburg.de>)
+© 2017, Robin Schwemmle (<robin.schwemmle@venus.uni-freiburg.de>) and Paolo Perona (<Paolo.Perona@ed.ac.uk>)
 
 ## Structure
 * __[Installation](#installation)__
@@ -17,7 +17,7 @@ This software can be distributed freely under the GPL v2 license. Please read th
 * __[References](#references)__
 
 ## Installation
-* **OS_Indenpendent:** Requires at least MATLAB R2016b and MY_XTICKLABELS (can be installed via Add-On-Explorer in MATLAB). Run main.m to launch GUI either from the MATLAB editor or the command window.
+* **OS_Indenpendent:** Requires at least MATLAB R2016b and MY_XTICKLABELS (can be installed via Add-On-Explorer in MATLAB). Run main.m to launch the GUI either from the MATLAB editor or the command window.
 * **Windows:** Contains installer for Windows. Please follow the instructions in the installation setup.
 * **Mac:** Contains installer for Mac. Please follow the instructions in the installation setup.
 
