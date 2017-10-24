@@ -1,4 +1,4 @@
-% Main file for generating several synthetic streamflow time series with Qsynth
+% Main file for generating multiple synthetic streamflow time series with Qsynth
 %
 % In order to save computation time the script is parallelised.
 % To run the script please indicate the paths pointing to the file or folder at the
