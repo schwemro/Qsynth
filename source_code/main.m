@@ -7,15 +7,16 @@
 %
 % MATLAB R2017a
 % (c) Copyright 2017, Robin Schwemmle <robin.schwemmle@venus.uni-freiburg.de>
-
+  
+  tic
   l = 10;
   approach=1; % 1 = 'AR' or 2 = 'ARMA'
-  opt_val = zeros(10,1);
+  opt_val = zeros(l,1);
   Qsyn = Qsynth();
   Qsyn.selectapproach(approach);
   Qsyn.settimeperiod('01/01/2011', '31/12/2030', 'dd/MM/yyyy');
-  Qsyn.folderres('/Users/robinschwemmle/Desktop/MATLAB/Qsynth/results/inverliever/AR/';
-  Qsyn.importts('/Users/robinschwemmle/Desktop/MATLAB/Qsynth/input/inverliever_11_16.csv', 'dd/MM/yyyy', 'N/A');
+  Qsyn.folderres('/Users/robinschwemmle/Desktop/Uni/Master/4_Semester_Hydrologie/Praktikum/MATLAB/Qsynth/results/inverliever/AR/');
+  Qsyn.importts('/Users/robinschwemmle/Desktop/Uni/Master/4_Semester_Hydrologie/Praktikum/MATLAB/Qsynth/input/inverliever_11_16.csv', 'dd/MM/yyyy', 'N/A');
   Qsyn.perennial();
   Qsyn.fillgaps(Qsyn.tt_obs.Q);
   Qsyn.tt_obs.Q_trans = Qsyn.logtransform(Qsyn.tt_obs.Q);
@@ -28,7 +29,7 @@
   clusters = {1,l}; % building clusters which are necessary for the parallelization
   for i = 1:l
       clusters{1,i} = Qsynth();
-      clusters{1,i}.folderres(['/Users/robinschwemmle/Desktop/MATLAB/Qsynth/results/inverliever/AR/' num2str(i)]);
+      clusters{1,i}.folderres(['/Users/robinschwemmle/Desktop/Uni/Master/4_Semester_Hydrologie/PraktikumMATLAB/Qsynth/results/inverliever/AR/' num2str(i)]);
       clusters{1,i}.selectapproach(approach);
       clusters{1,i}.settimeperiod('01/01/2011', '31/12/2030', 'dd/MM/yyyy');
       clusters{1,i}.tt_obs = Qsyn.tt_obs;
@@ -54,10 +55,11 @@
       hbar.iterate(1);
   end
 
-  close(hbar)
+  close(hbar);
+  close all;
 
   [val, idx] = min(opt_val);
-  clusters{1,idx}.dir_results = '/Users/robinschwemmle/Desktop/MATLAB/Qsynth/results/inverliever/AR/';
+  clusters{1,idx}.dir_results = '/Users/robinschwemmle/Desktop/Uni/Master/4_Semester_Hydrologie/PraktikumMATLAB/Qsynth/results/inverliever/AR/';
   clusters{1,idx}.tt_syn.Q_sim_re = clusters{1,idx}.MAwMWS(clusters{1,idx}.tt_syn.Q_sim_re,clusters{1,idx}.w,clusters{1,idx}.Qx,'lin');
   clusters{1,idx}.testnorm();
   clusters{1,idx}.testautocor();
@@ -68,7 +70,7 @@
   clusters{1,idx}.teststats();
   clusters{1,idx}.teststatstotxt();
   clusters{1,idx}.Qtocsv(clusters{1,idx}.tt_syn.Date, clusters{1,idx}.tt_syn.Q_sim_re, ['syn_fin_' num2str(j)] );
-  dlmwrite(['/Users/robinschwemmle/Desktop/MATLAB/Qsynth/results/inverliever/AR/opt_val.txt'], opt_val, 'delimiter', '\t', 'precision', 3);
+  dlmwrite(['/Users/robinschwemmle/Desktop/Uni/Master/4_Semester_Hydrologie/PraktikumMATLAB/Qsynth/results/inverliever/AR/opt_val.txt'], opt_val, 'delimiter', '\t', 'precision', 3);
 
   t = round(toc/60,1);
   disp(['Total runtime: ' num2str(t) ' min'])
