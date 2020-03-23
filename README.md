@@ -11,6 +11,7 @@ The **generator** synthesises an artificial streamflow time series with daily va
 In case you use Qsynth in other software or scientific publications,
 please reference the software. It can be cited
 as:
+
     Razurel, P., Niayidar, A., Schwemmle, R and Perona, P.: Influence of
     Ecohydrological Indicators on Sustainable Flow Release Policies for
     Hydropower, Water Resources Management (in review), 2020.
