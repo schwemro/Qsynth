@@ -1,8 +1,19 @@
 # Streamflow Generator (Qsynth) ![](images/icon_48x48.png "Icon")
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3724649.svg)](https://doi.org/10.5281/zenodo.3724649)
+
 The **generator** synthesises an artificial streamflow time series with daily values based on autoregressive modeling. Its generation merely based on an observed streamflow time series. The implemented approach is aligned to Salas (1993)[1].
 
  In addition to Salas (1993)[1] a **filter** is applied to the time series resulting from the AR model to reduce the noise which occurs at low and medium flow rates. By applying a moving average with moving window size the noise is smoothed. It means that the window size is altering. The filter starts the lowest flow rate with a certain window size and decreases linearly until also a certain threshold for streamflow is reached after where the filter is not be applied anymore. To find the optimal starting window size and ending streamflow threshold both parameters are varied. For the different settings then the autocorrelation function (ACF) and the Indicators of Hydrologic Alteration (IHA)[2] (except Group 3) are calculated for the observed and the synthetic streamflow overlapping the same time period to form the difference. Subsequently the arithmetic mean of the difference for the ACF and the IHAs is calculated. Out of it the geometric mean is determined. The parameter set which minimizes the geometric mean is found to be optimal.
+ 
+## How to cite
+
+In case you use Qsynth in other software or scientific publications,
+please reference the software. It can be cited
+as:
+    Razurel, P., Niayidar, A., Schwemmle, R and Perona, P.: Influence of
+    Ecohydrological Indicators on Sustainable Flow Release Policies for
+    Hydropower, Water Resources Management (in review), 2020.
 
 ## License
 
